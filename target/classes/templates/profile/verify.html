@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head}"></head>
+<body>
+<div th:replace="~{fragments/layout :: header}"></div>
+
+<main class="page page--narrow">
+	<h1 th:text="${pageTitle}">Подтверждение почты</h1>
+	<div class="profile-card" th:if="${verified}">
+		<p class="alert alert--success"
+		   th:text="${locale.code == 'en' ? 'Email confirmed. You can use all profile features.' : 'Почта подтверждена. Все функции профиля доступны.'}"></p>
+		<a class="btn btn--primary" th:href="@{/profile(lang=${locale.code})}"
+		   th:text="${locale.code == 'en' ? 'Go to profile' : 'В профиль'}"></a>
+	</div>
+	<div class="profile-card" th:unless="${verified}">
+		<p class="alert alert--error"
+		   th:text="${locale.code == 'en' ? 'Invalid or expired link. Request a new one in your profile.' : 'Ссылка недействительна или устарела. Запросите новую в профиле.'}"></p>
+		<a class="btn btn--secondary" th:href="@{/profile(lang=${locale.code})}"
+		   th:text="${locale.code == 'en' ? 'Back to profile' : 'В профиль'}"></a>
+	</div>
+</main>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+</body>
+</html>

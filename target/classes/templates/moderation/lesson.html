@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head}"></head>
+<body>
+<div th:replace="~{fragments/layout :: header}"></div>
+
+<main class="page">
+	<h1 th:text="${pageTitle}">Создать урок</h1>
+
+	<div th:replace="~{fragments/moderation :: nav}"></div>
+
+	<div class="alert alert--success" th:if="${successMessage}" th:text="${successMessage}"></div>
+	<div class="alert alert--error" th:if="${errorMessage}" th:text="${errorMessage}"></div>
+
+	<section class="profile-card" th:if="${submission == null}">
+		<h2 th:text="${locale.code == 'en' ? 'New lesson' : 'Новый урок'}">Новый урок</h2>
+		<p class="muted">
+			<a th:href="@{/moderation/pseudo-video(lang=${locale.code})}"
+			   th:text="${locale.code == 'en' ? 'Only need pseudo-video? Use the dedicated converter.' : 'Нужно только псевдо-видео? Откройте отдельный конвертер.'}"></a>
+		</p>
+		<form class="moderation-form" method="post" th:action="@{/moderation/lesson(lang=${locale.code})}">
+			<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+			<label>
+				<span th:text="${locale.code == 'en' ? 'Section id' : 'ID раздела'}">ID раздела</span>
+				<input name="sectionId" required placeholder="redstone_signal"/>
+			</label>
+			<label>
+				<span th:text="${locale.code == 'en' ? 'Lesson id' : 'ID урока'}">ID урока</span>
+				<input name="lessonId" required placeholder="carry_signal_extra"/>
+			</label>
+			<label>
+				<span th:text="${locale.code == 'en' ? 'Video id' : 'ID псевдо-видео'}">ID видео</span>
+				<input name="videoId" required placeholder="carry_signal_extra"/>
+			</label>
+			<label>
+				<span th:text="${locale.code == 'en' ? 'Title (RU)' : 'Заголовок (RU)'}">Заголовок RU</span>
+				<input name="titleRu" required/>
+			</label>
+			<label>
+				<span th:text="${locale.code == 'en' ? 'Title (EN)' : 'Заголовок (EN)'}">Заголовок EN</span>
+				<input name="titleEn" required/>
+			</label>
+			<label>
+				<span th:text="${locale.code == 'en' ? 'Body (RU)' : 'Текст (RU)'}">Текст RU</span>
+				<textarea name="bodyRu" rows="8" required></textarea>
+			</label>
+			<label>
+				<span th:text="${locale.code == 'en' ? 'Body (EN)' : 'Текст (EN)'}">Текст EN</span>
+				<textarea name="bodyEn" rows="8" required></textarea>
+			</label>
+			<div class="moderation-form__actions">
+				<button type="submit" class="btn btn--primary"
+						th:text="${locale.code == 'en' ? 'Create draft' : 'Создать черновик'}">Создать черновик</button>
+			</div>
+		</form>
+	</section>
+
+	<section class="profile-card" th:if="${submission != null}">
+		<h2 th:text="${submission.titleRu}">Урок</h2>
+		<div class="moderation-meta">
+			<span th:text="${submission.sectionId} + ' / ' + ${submission.lessonId}"></span>
+			<span class="status-badge" th:text="${submission.status}"></span>
+			<span class="muted" th:text="${locale.code == 'en' ? 'video:' : 'видео:'} + ' ' + ${submission.videoId}"></span>
+		</div>
+
+		<div class="alert alert--success" th:if="${videoStatus != null and videoStatus.ready()}">
+			<span th:if="${locale.code == 'en'}"
+				  th:text="'Pseudo-video ready: ' + ${videoStatus.frameCount()} + ' PNG frames'"></span>
+			<span th:unless="${locale.code == 'en'}"
+				  th:text="'Псевдо-видео готово: ' + ${videoStatus.frameCount()} + ' кадров PNG'"></span>
+		</div>
+
+		<div class="moderation-step">
+			<h3 th:text="${locale.code == 'en' ? '1. Convert video to pseudo-video' : '1. Псевдо-видео из обычного видео'}">Конвертация</h3>
+			<p class="muted">
+				<span th:text="${videoFps} + ' fps · ' + ${videoWidth} + '×' + ${videoHeight} + ' · frame_XXXXX.png + meta.json'"></span>
+			</p>
+			<form class="moderation-form" method="post" enctype="multipart/form-data"
+				  th:action="@{/moderation/video/convert(lang=${locale.code})}">
+				<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+				<input type="hidden" name="submissionId" th:value="${submission.id}"/>
+				<input type="hidden" name="returnTo" value="lesson"/>
+				<label>
+					<span th:text="${locale.code == 'en' ? 'Source video (mp4, webm, mov…)' : 'Исходное видео (mp4, webm, mov…)'}">Видео</span>
+					<input type="file" name="video" accept="video/*" required/>
+				</label>
+				<div class="moderation-form__actions">
+					<button type="submit" class="btn btn--primary"
+							th:text="${locale.code == 'en' ? 'Convert to PNG frames' : 'Создать кадры PNG'}">Конвертировать</button>
+				</div>
+			</form>
+			<p class="field-hint" th:text="${locale.code == 'en' ? 'Requires FFmpeg on the server.' : 'На сервере должен быть установлен FFmpeg.'}"></p>
+			<p class="moderation-submission__actions" th:if="${videoStatus != null and videoStatus.ready()}">
+				<a class="btn btn--secondary btn--small"
+				   th:href="@{/moderation/submissions/{id}/download-frames-zip(id=${submission.id})}"
+				   th:text="${locale.code == 'en' ? 'Download frames ZIP' : 'Скачать ZIP с кадрами'}">ZIP</a>
+			</p>
+		</div>
+
+		<div class="moderation-step">
+			<h3 th:text="${locale.code == 'en' ? '2. Build lesson JAR' : '2. Сборка JAR урока'}">Сборка JAR</h3>
+			<form class="moderation-form" method="post" th:action="@{/moderation/lesson/build-jar(lang=${locale.code})}">
+				<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+				<input type="hidden" name="submissionId" th:value="${submission.id}"/>
+				<div class="moderation-form__actions">
+					<button type="submit" class="btn btn--primary"
+							th:text="${locale.code == 'en' ? 'Build lesson JAR' : 'Собрать JAR урока'}">Собрать JAR</button>
+				</div>
+			</form>
+			<p class="moderation-submission__actions" th:if="${submission.jarPath}">
+				<a class="btn btn--secondary btn--small"
+				   th:href="@{/moderation/submissions/{id}/download(id=${submission.id})}"
+				   th:text="${locale.code == 'en' ? 'Download lesson JAR' : 'Скачать JAR урока'}">Скачать</a>
+			</p>
+		</div>
+
+		<div class="moderation-step">
+			<h3 th:text="${locale.code == 'en' ? '3. Submit for review' : '3. Отправка на проверку'}">Отправка</h3>
+			<form class="moderation-form" method="post" th:action="@{/moderation/lesson/submit(lang=${locale.code})}">
+				<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+				<input type="hidden" name="submissionId" th:value="${submission.id}"/>
+				<div class="moderation-form__actions">
+					<button type="submit" class="btn btn--primary"
+							th:text="${locale.code == 'en' ? 'Send to administrator' : 'Отправить администратору'}">Отправить</button>
+				</div>
+			</form>
+		</div>
+	</section>
+</main>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+</body>
+</html>

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head}"></head>
+<body>
+<div th:replace="~{fragments/layout :: header}"></div>
+
+<main class="page">
+	<section class="hero">
+		<p class="badge" th:text="${greeting}">Добро пожаловать</p>
+		<h1>
+			<span th:text="${mod.name}">Redstone Master</span>
+			<span class="hero__suffix" th:text="${titleSuffix}"></span>
+		</h1>
+		<p class="subtitle" th:text="${mod.description}"></p>
+	</section>
+
+	<section class="section-block" id="about">
+		<h2 th:text="${locale.code == 'en' ? 'About the mod' : 'О моде'}">О моде</h2>
+		<article class="about-card" th:each="section : ${aboutSections}">
+			<h3 th:text="${section.title()}">Раздел</h3>
+			<p class="preformatted" th:utext="${@textLinkService.toHtml(section.content(), locale.code)}"></p>
+		</article>
+	</section>
+
+	<div th:replace="~{fragments/install-section :: install-section}"></div>
+
+	<section class="quick-links">
+		<a class="quick-link" th:href="@{/tutorial(lang=${locale.code})}">
+			<span th:text="${locale.code == 'en' ? 'Tutorial catalog' : 'Каталог обучения'}"></span>
+		</a>
+		<a class="quick-link" th:href="@{/settings(lang=${locale.code})}">
+			<span th:text="${locale.code == 'en' ? 'Settings reference' : 'Справочник настроек'}"></span>
+		</a>
+		<a class="quick-link" th:href="@{/api/info}">API /api/info</a>
+	</section>
+</main>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+</body>
+</html>

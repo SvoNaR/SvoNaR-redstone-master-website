@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org"
+	  xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head}"></head>
+<body>
+<div th:replace="~{fragments/layout :: header}"></div>
+
+<main class="page">
+	<p class="alert alert--success" th:if="${deleteSuccess}"
+	   th:text="${locale.code == 'en' ? 'News deleted.' : 'Новость удалена.'}"></p>
+
+	<div class="page-heading-row">
+		<h1 th:text="${locale.code == 'en' ? 'News' : 'Новости'}">Новости</h1>
+		<a sec:authorize="hasAnyRole('MODERATOR','ADMIN')"
+		   class="btn btn--primary btn--small"
+		   th:href="@{/news/publish(lang=${locale.code})}"
+		   th:text="${locale.code == 'en' ? 'Publish news' : 'Опубликовать новость'}"></a>
+	</div>
+
+	<section class="profile-card notifications-empty" th:if="${#lists.isEmpty(newsPosts)}">
+		<p th:text="${locale.code == 'en' ? 'No news yet.' : 'Новостей пока нет.'}"></p>
+	</section>
+
+	<div class="news-list" th:unless="${#lists.isEmpty(newsPosts)}">
+		<article class="news-card" th:each="post : ${newsPosts}" th:id="'news-' + ${post.id()}">
+			<h2>
+				<a th:href="@{/news/{id}(id=${post.id()}, lang=${locale.code})}" th:text="${post.title()}">Title</a>
+			</h2>
+			<p class="news-card__meta muted">
+				<span th:text="${post.authorName()}"></span>
+				·
+				<span th:text="${#temporals.format(post.createdAt(), 'dd.MM.yyyy HH:mm')}"></span>
+			</p>
+			<p class="news-card__preview preformatted" th:text="${#strings.abbreviate(post.body(), 220)}"></p>
+			<a class="btn btn--secondary btn--small"
+			   th:href="@{/news/{id}(id=${post.id()}, lang=${locale.code})}"
+			   th:text="${locale.code == 'en' ? 'Read more' : 'Читать далее'}"></a>
+		</article>
+	</div>
+</main>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+</body>
+</html>

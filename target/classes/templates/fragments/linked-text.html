@@ -1,0 +1,4 @@
+<p th:fragment="linked-text (text)" class="preformatted" th:utext="${@textLinkService.toHtml(text, locale.code)}"></p>
+<p th:fragment="linked-note (text)" class="note" th:utext="${@textLinkService.toHtml(text, locale.code)}"></p>
+<p th:fragment="linked-plain (text)" th:utext="${@textLinkService.toHtml(text, locale.code)}"></p>
+<li th:fragment="linked-step (text)" th:utext="${@textLinkService.toHtml(text, locale.code)}"></li>

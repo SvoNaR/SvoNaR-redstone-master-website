@@ -1,0 +1,14 @@
+{
+  "sections" : [ {
+    "id" : "_pseudo_video",
+    "title" : "_pseudo_video",
+    "lessons" : [ {
+      "id" : "primerr",
+      "title" : "Псевдо-видео «primerr» (черновик модератора).",
+      "body" : "Псевдо-видео «primerr» (черновик модератора).",
+      "search" : "псевдо-видео «primerr» (черновик модератора).",
+      "images" : [ ],
+      "videos" : [ "primerr" ]
+    } ]
+  } ]
+}

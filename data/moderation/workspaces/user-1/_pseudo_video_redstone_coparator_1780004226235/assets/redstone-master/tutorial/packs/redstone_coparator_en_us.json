@@ -1,0 +1,14 @@
+{
+  "sections" : [ {
+    "id" : "_pseudo_video",
+    "title" : "_pseudo_video",
+    "lessons" : [ {
+      "id" : "redstone_coparator",
+      "title" : "Pseudo-video \"redstone_coparator\" (moderator draft).",
+      "body" : "Pseudo-video \"redstone_coparator\" (moderator draft).",
+      "search" : "pseudo-video \"redstone_coparator\" (moderator draft).",
+      "images" : [ ],
+      "videos" : [ "redstone_coparator" ]
+    } ]
+  } ]
+}

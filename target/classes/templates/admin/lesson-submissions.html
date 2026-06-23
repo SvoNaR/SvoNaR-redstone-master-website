@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head}"></head>
+<body>
+<div th:replace="~{fragments/layout :: header}"></div>
+
+<main class="page">
+	<h1 th:text="${pageTitle}">Проверка уроков</h1>
+
+	<div th:replace="~{fragments/admin :: nav}"></div>
+
+	<div class="alert alert--success" th:if="${adminMessage == 'lesson-approved'}">
+		<span th:text="${locale.code == 'en' ? 'Lesson approved.' : 'Урок одобрен.'}"></span>
+	</div>
+	<div class="alert alert--success" th:if="${adminMessage == 'lesson-rejected'}">
+		<span th:text="${locale.code == 'en' ? 'Lesson rejected.' : 'Урок отклонён.'}"></span>
+	</div>
+
+	<section class="profile-card" th:if="${#lists.isEmpty(submissions)}">
+		<p class="muted" th:text="${locale.code == 'en' ? 'No lessons pending review.' : 'Нет уроков на проверке.'}"></p>
+	</section>
+
+	<div class="moderation-submission-list" th:unless="${#lists.isEmpty(submissions)}">
+		<section class="profile-card" th:each="item : ${submissions}">
+			<h2 th:text="${item.titleRu}">Урок</h2>
+			<div class="moderation-meta">
+				<span th:text="${item.sectionId} + ' / ' + ${item.lessonId}"></span>
+				<span class="status-badge" th:text="${item.status}"></span>
+				<span class="muted" th:text="${locale.code == 'en' ? 'video:' : 'видео:'} + ' ' + ${item.videoId}"></span>
+			</div>
+
+			<p class="moderation-submission__actions" th:if="${item.jarPath}">
+				<a class="btn btn--secondary btn--small"
+				   th:href="@{/admin/lesson-submissions/{id}/download(id=${item.id})}"
+				   th:text="${locale.code == 'en' ? 'Download JAR' : 'Скачать JAR'}">Скачать JAR</a>
+			</p>
+
+			<div class="moderation-step">
+				<h3 th:text="${locale.code == 'en' ? 'Approve' : 'Одобрить'}">Одобрить</h3>
+				<form class="moderation-form" method="post"
+					  th:action="@{/admin/lesson-submissions/{id}/approve(id=${item.id}, lang=${locale.code})}">
+					<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+					<label>
+						<span th:text="${locale.code == 'en' ? 'Comment (optional)' : 'Комментарий (необязательно)'}">Комментарий</span>
+						<input name="comment" type="text"/>
+					</label>
+					<div class="moderation-form__actions">
+						<button type="submit" class="btn btn--primary"
+								th:text="${locale.code == 'en' ? 'Approve lesson' : 'Одобрить урок'}">Одобрить</button>
+					</div>
+				</form>
+			</div>
+
+			<div class="moderation-step">
+				<h3 th:text="${locale.code == 'en' ? 'Reject' : 'Отклонить'}">Отклонить</h3>
+				<form class="moderation-form" method="post"
+					  th:action="@{/admin/lesson-submissions/{id}/reject(id=${item.id}, lang=${locale.code})}"
+					  th:attr="data-confirm-message=${locale.code == 'en'
+					  	? 'Reject this lesson submission?'
+					  	: 'Отклонить эту отправку урока?'}">
+					<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+					<label>
+						<span th:text="${locale.code == 'en' ? 'Rejection reason' : 'Причина отклонения'}">Причина</span>
+						<input name="comment" type="text" required/>
+					</label>
+					<div class="moderation-form__actions">
+						<button type="submit" class="btn btn--secondary"
+								th:text="${locale.code == 'en' ? 'Reject lesson' : 'Отклонить урок'}">Отклонить</button>
+					</div>
+				</form>
+			</div>
+		</section>
+	</div>
+</main>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+</body>
+</html>

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head}"></head>
+<body>
+<div th:replace="~{fragments/layout :: header}"></div>
+
+<main class="page">
+	<h1 th:text="${pageTitle}">Мои уроки</h1>
+
+	<div th:replace="~{fragments/moderation :: nav}"></div>
+
+	<div class="alert alert--success" th:if="${successMessage}" th:text="${successMessage}"></div>
+
+	<section class="profile-card" th:if="${#lists.isEmpty(submissions)}">
+		<p class="muted" th:text="${locale.code == 'en' ? 'No submissions yet.' : 'Отправок пока нет.'}">Нет отправок</p>
+		<p class="moderation-submission__actions">
+			<a class="btn btn--secondary" th:href="@{/moderation/lesson(lang=${locale.code})}"
+			   th:text="${locale.code == 'en' ? 'Create a lesson draft' : 'Создать черновик урока'}"></a>
+			<a class="btn btn--secondary" th:href="@{/moderation/pseudo-video(lang=${locale.code})}"
+			   th:text="${locale.code == 'en' ? 'Convert pseudo-video' : 'Конвертировать псевдо-видео'}"></a>
+		</p>
+	</section>
+
+	<div class="moderation-submission-list" th:unless="${#lists.isEmpty(submissions)}">
+		<section class="profile-card" th:each="item : ${submissions}">
+			<h2 th:text="${item.titleRu}">Урок</h2>
+			<div class="moderation-meta">
+				<span th:text="${item.sectionId} + ' / ' + ${item.lessonId}"></span>
+				<span class="status-badge"
+					  th:classappend="${item.status.name() == 'APPROVED' ? ' status-badge--ok' : (item.status.name() == 'REJECTED' ? ' status-badge--warn' : '')}"
+					  th:text="${item.status}"></span>
+			</div>
+			<p class="moderation-submission__actions" th:if="${item.jarPath}">
+				<a class="btn btn--secondary btn--small"
+				   th:href="@{/moderation/submissions/{id}/download(id=${item.id})}"
+				   th:text="${locale.code == 'en' ? 'Download JAR' : 'Скачать JAR'}">Скачать JAR</a>
+			</p>
+			<p class="moderation-review-comment" th:if="${item.reviewComment}" th:text="${item.reviewComment}"></p>
+		</section>
+	</div>
+</main>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+</body>
+</html>

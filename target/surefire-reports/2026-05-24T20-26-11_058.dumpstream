@@ -1,0 +1,5 @@
+# Created at 2026-05-24T20:26:11.369
+Boot Manifest-JAR contains absolute paths in classpath 'D:\1_THE_MOST_IMPORTANT\VUZ\8_sem\VKR\redstone-master\other_projects\redstone-master-web\target\test-classes'
+Hint: <argLine>-Djdk.net.URLClassPath.disableClassPathURLCheck=true</argLine>
+'other' has different root
+

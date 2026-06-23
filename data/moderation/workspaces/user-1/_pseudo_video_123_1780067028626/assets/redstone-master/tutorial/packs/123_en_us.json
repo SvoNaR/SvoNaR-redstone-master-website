@@ -1,0 +1,14 @@
+{
+  "sections" : [ {
+    "id" : "_pseudo_video",
+    "title" : "_pseudo_video",
+    "lessons" : [ {
+      "id" : "123",
+      "title" : "Pseudo-video \"123\" (moderator draft).",
+      "body" : "Pseudo-video \"123\" (moderator draft).",
+      "search" : "pseudo-video \"123\" (moderator draft).",
+      "images" : [ ],
+      "videos" : [ "123" ]
+    } ]
+  } ]
+}

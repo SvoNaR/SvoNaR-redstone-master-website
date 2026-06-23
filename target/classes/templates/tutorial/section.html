@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head}"></head>
+<body>
+<div th:replace="~{fragments/layout :: header}"></div>
+
+<main class="page">
+	<p class="breadcrumb">
+		<a th:href="@{/tutorial(lang=${locale.code})}" th:text="${locale.code == 'en' ? 'Tutorial' : 'Обучение'}"></a>
+		→
+		<span th:text="${section.title()}"></span>
+	</p>
+
+	<h1 th:text="${section.title()}">Раздел</h1>
+	<p class="preformatted" th:utext="${@textLinkService.toHtml(section.summary(), locale.code)}"></p>
+
+	<p class="note" th:if="${!section.sources().isBlank()}"
+	   th:utext="${@textLinkService.toHtml(section.sources(), locale.code)}"></p>
+
+	<h2 th:text="${locale.code == 'en' ? 'Lessons' : 'Уроки'}">Уроки</h2>
+	<ul class="lesson-list">
+		<li th:each="lesson : ${section.lessons()}">
+			<a th:href="@{/tutorial/{sid}/{lid}(sid=${section.id()}, lid=${lesson.id()}, lang=${locale.code})}"
+			   th:text="${lesson.title()}">Урок</a>
+		</li>
+	</ul>
+</main>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+</body>
+</html>

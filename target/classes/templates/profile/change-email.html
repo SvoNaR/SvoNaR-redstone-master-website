@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head}"></head>
+<body>
+<div th:replace="~{fragments/layout :: header}"></div>
+
+<main class="page page--auth">
+	<div class="auth-center auth-center--wide">
+		<h1 th:text="${pageTitle}">Смена почты</h1>
+
+		<section class="profile-card auth-card change-email-card">
+			<div class="auth-card-preview">
+				<img class="profile-avatar profile-avatar--image profile-avatar--large"
+					 th:src="${profileUser.avatarUrl()}" th:alt="${profileUser.username()}" width="64" height="64"/>
+				<p class="profile-username" th:text="${profileUser.username()}">user</p>
+			</div>
+
+			<p th:text="${locale.code == 'en'
+				? 'Enter a new email address. We will send a confirmation link to it.'
+				: 'Укажите новый адрес почты. На него будет отправлено письмо с подтверждением.'}"></p>
+
+			<form id="change-email-form" class="auth-form" th:action="@{/profile/change-email}"
+				  th:object="${changeEmailForm}" method="post">
+				<input type="hidden" name="lang" th:value="${locale.code}"/>
+				<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+				<label>
+					<span th:text="${locale.code == 'en' ? 'New email' : 'Новая почта'}"></span>
+					<input type="email" th:field="*{email}" autocomplete="email"/>
+					<span class="field-error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></span>
+				</label>
+			</form>
+
+			<div class="card-actions">
+				<a class="btn btn--secondary" th:href="@{/profile(lang=${locale.code})}"
+				   th:text="${locale.code == 'en' ? 'Cancel' : 'Отмена'}"></a>
+				<button type="submit" form="change-email-form" class="btn btn--primary"
+						th:text="${locale.code == 'en' ? 'Save email' : 'Сохранить почту'}"></button>
+			</div>
+		</section>
+	</div>
+</main>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+</body>
+</html>

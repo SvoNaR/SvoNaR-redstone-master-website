@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: ru.redstonemaster.web.controller.NewsPublishEncodingTest
+-------------------------------------------------------------------------------
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 5.447 s -- in ru.redstonemaster.web.controller.NewsPublishEncodingTest

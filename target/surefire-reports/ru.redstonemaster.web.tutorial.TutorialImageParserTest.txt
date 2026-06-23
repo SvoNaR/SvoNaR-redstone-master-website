@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: ru.redstonemaster.web.tutorial.TutorialImageParserTest
+-------------------------------------------------------------------------------
+Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.046 s -- in ru.redstonemaster.web.tutorial.TutorialImageParserTest

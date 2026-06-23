@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head}"></head>
+<body>
+<div th:replace="~{fragments/layout :: header}"></div>
+
+<main class="page">
+	<h1 th:text="${pageTitle}">Модераторы</h1>
+
+	<div th:replace="~{fragments/admin :: nav}"></div>
+
+	<div class="alert alert--success" th:if="${adminMessage == 'promoted'}">
+		<span th:text="${locale.code == 'en' ? 'User promoted to moderator.' : 'Пользователь назначен модератором.'}"></span>
+	</div>
+	<div class="alert alert--success" th:if="${adminMessage == 'demoted'}">
+		<span th:text="${locale.code == 'en' ? 'Moderator demoted to user.' : 'Модератор снят с роли.'}"></span>
+	</div>
+	<div class="alert alert--error" th:if="${adminError}" th:text="${adminError}"></div>
+
+	<section class="profile-card">
+		<h2 th:text="${locale.code == 'en' ? 'Assign moderators' : 'Назначение модераторов'}">Назначение модераторов</h2>
+		<p class="muted" th:text="${locale.code == 'en'
+			? 'Promote regular users to moderators. They will get access to the Moderation section.'
+			: 'Назначайте обычных пользователей модераторами — им станет доступен раздел «Модерация».'}"></p>
+
+		<form class="admin-search" method="get" th:action="@{/admin/moderators}">
+			<input type="hidden" name="lang" th:value="${locale.code}"/>
+			<input type="hidden" name="userPage" value="1"/>
+			<input type="hidden" name="modPage" th:value="${moderatorPage.currentPage()}"/>
+			<input type="hidden" name="modSearch" th:value="${moderatorPage.search()}"/>
+			<input type="search" name="userSearch" th:value="${regularUserPage.search()}"
+				   th:attr="placeholder=${locale.code == 'en' ? 'Search by username or email' : 'Поиск по никнейму или почте'}"/>
+			<button type="submit" class="btn btn--secondary btn--small"
+					th:text="${locale.code == 'en' ? 'Search' : 'Найти'}">Найти</button>
+		</form>
+
+		<div class="table-scroll" th:if="${!regularUsers.isEmpty()}">
+			<table class="data-table admin-table">
+				<thead>
+				<tr>
+					<th th:text="${locale.code == 'en' ? 'Username' : 'Никнейм'}">Никнейм</th>
+					<th th:text="${locale.code == 'en' ? 'Email' : 'Почта'}">Почта</th>
+					<th></th>
+				</tr>
+				</thead>
+				<tbody>
+				<tr th:each="user : ${regularUsers}">
+					<td th:text="${user.username()}"></td>
+					<td th:text="${user.email()}"></td>
+					<td>
+						<form th:action="@{/admin/promote}" method="post" class="inline-form"
+							  th:attr="data-confirm-message=${locale.code == 'en'
+							  	? 'Promote user ' + user.username() + ' to moderator?'
+							  	: 'Назначить пользователя ' + user.username() + ' модератором?'}">
+							<input type="hidden" name="userId" th:value="${user.id()}"/>
+							<input type="hidden" name="lang" th:value="${locale.code}"/>
+							<input type="hidden" name="userPage" th:value="${regularUserPage.currentPage()}"/>
+							<input type="hidden" name="userSearch" th:value="${regularUserPage.search()}"/>
+							<input type="hidden" name="modPage" th:value="${moderatorPage.currentPage()}"/>
+							<input type="hidden" name="modSearch" th:value="${moderatorPage.search()}"/>
+							<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+							<button type="submit" class="btn btn--small btn--primary"
+									th:text="${locale.code == 'en' ? 'Make moderator' : 'Сделать модератором'}"></button>
+						</form>
+					</td>
+				</tr>
+				</tbody>
+			</table>
+		</div>
+		<p class="muted" th:if="${regularUsers.isEmpty() and regularUserPage.search().isBlank()}"
+		   th:text="${locale.code == 'en' ? 'No regular users yet.' : 'Обычных пользователей пока нет.'}"></p>
+		<p class="muted" th:if="${regularUsers.isEmpty() and !regularUserPage.search().isBlank()}"
+		   th:text="${locale.code == 'en' ? 'No users match your search.' : 'Пользователи не найдены.'}"></p>
+
+		<nav class="pagination" th:if="${regularUserPage.hasPagination()}" aria-label="Users pagination">
+			<a class="btn btn--secondary btn--small"
+			   th:if="${regularUserPage.hasPrevious()}"
+			   th:href="@{/admin/moderators(lang=${locale.code}, userPage=${regularUserPage.previousPage()}, userSearch=${regularUserPage.search()}, modPage=${moderatorPage.currentPage()}, modSearch=${moderatorPage.search()})}"
+			   th:text="${locale.code == 'en' ? 'Previous' : 'Назад'}">Назад</a>
+			<span class="pagination__status"
+				  th:text="${locale.code == 'en'
+				  	? 'Page ' + regularUserPage.currentPage() + ' of ' + regularUserPage.totalPages()
+				  	: 'Страница ' + regularUserPage.currentPage() + ' из ' + regularUserPage.totalPages()}"></span>
+			<a class="btn btn--secondary btn--small"
+			   th:if="${regularUserPage.hasNext()}"
+			   th:href="@{/admin/moderators(lang=${locale.code}, userPage=${regularUserPage.nextPage()}, userSearch=${regularUserPage.search()}, modPage=${moderatorPage.currentPage()}, modSearch=${moderatorPage.search()})}"
+			   th:text="${locale.code == 'en' ? 'Next' : 'Далее'}">Далее</a>
+		</nav>
+	</section>
+
+	<section class="profile-card">
+		<h2 th:text="${locale.code == 'en' ? 'Current moderators' : 'Текущие модераторы'}">Текущие модераторы</h2>
+
+		<form class="admin-search" method="get" th:action="@{/admin/moderators}">
+			<input type="hidden" name="lang" th:value="${locale.code}"/>
+			<input type="hidden" name="modPage" value="1"/>
+			<input type="hidden" name="userPage" th:value="${regularUserPage.currentPage()}"/>
+			<input type="hidden" name="userSearch" th:value="${regularUserPage.search()}"/>
+			<input type="search" name="modSearch" th:value="${moderatorPage.search()}"
+				   th:attr="placeholder=${locale.code == 'en' ? 'Search by username or email' : 'Поиск по никнейму или почте'}"/>
+			<button type="submit" class="btn btn--secondary btn--small"
+					th:text="${locale.code == 'en' ? 'Search' : 'Найти'}">Найти</button>
+		</form>
+
+		<div class="table-scroll" th:if="${!moderators.isEmpty()}">
+			<table class="data-table admin-table">
+				<thead>
+				<tr>
+					<th th:text="${locale.code == 'en' ? 'Username' : 'Никнейм'}">Никнейм</th>
+					<th th:text="${locale.code == 'en' ? 'Email' : 'Почта'}">Почта</th>
+					<th></th>
+				</tr>
+				</thead>
+				<tbody>
+				<tr th:each="user : ${moderators}">
+					<td th:text="${user.username()}"></td>
+					<td th:text="${user.email()}"></td>
+					<td>
+						<form th:action="@{/admin/demote}" method="post" class="inline-form"
+							  th:attr="data-confirm-message=${locale.code == 'en'
+							  	? 'Remove moderator role from user ' + user.username() + '?'
+							  	: 'Снять роль модератора у пользователя ' + user.username() + '?'}">
+							<input type="hidden" name="userId" th:value="${user.id()}"/>
+							<input type="hidden" name="lang" th:value="${locale.code}"/>
+							<input type="hidden" name="userPage" th:value="${regularUserPage.currentPage()}"/>
+							<input type="hidden" name="userSearch" th:value="${regularUserPage.search()}"/>
+							<input type="hidden" name="modPage" th:value="${moderatorPage.currentPage()}"/>
+							<input type="hidden" name="modSearch" th:value="${moderatorPage.search()}"/>
+							<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+							<button type="submit" class="btn btn--small btn--secondary"
+									th:text="${locale.code == 'en' ? 'Remove role' : 'Снять роль'}"></button>
+						</form>
+					</td>
+				</tr>
+				</tbody>
+			</table>
+		</div>
+		<p class="muted" th:if="${moderators.isEmpty() and moderatorPage.search().isBlank()}"
+		   th:text="${locale.code == 'en' ? 'No moderators assigned.' : 'Модераторы не назначены.'}"></p>
+		<p class="muted" th:if="${moderators.isEmpty() and !moderatorPage.search().isBlank()}"
+		   th:text="${locale.code == 'en' ? 'No moderators match your search.' : 'Модераторы не найдены.'}"></p>
+
+		<nav class="pagination" th:if="${moderatorPage.hasPagination()}" aria-label="Moderators pagination">
+			<a class="btn btn--secondary btn--small"
+			   th:if="${moderatorPage.hasPrevious()}"
+			   th:href="@{/admin/moderators(lang=${locale.code}, modPage=${moderatorPage.previousPage()}, modSearch=${moderatorPage.search()}, userPage=${regularUserPage.currentPage()}, userSearch=${regularUserPage.search()})}"
+			   th:text="${locale.code == 'en' ? 'Previous' : 'Назад'}">Назад</a>
+			<span class="pagination__status"
+				  th:text="${locale.code == 'en'
+				  	? 'Page ' + moderatorPage.currentPage() + ' of ' + moderatorPage.totalPages()
+				  	: 'Страница ' + moderatorPage.currentPage() + ' из ' + moderatorPage.totalPages()}"></span>
+			<a class="btn btn--secondary btn--small"
+			   th:if="${moderatorPage.hasNext()}"
+			   th:href="@{/admin/moderators(lang=${locale.code}, modPage=${moderatorPage.nextPage()}, modSearch=${moderatorPage.search()}, userPage=${regularUserPage.currentPage()}, userSearch=${regularUserPage.search()})}"
+			   th:text="${locale.code == 'en' ? 'Next' : 'Далее'}">Далее</a>
+		</nav>
+	</section>
+</main>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+</body>
+</html>

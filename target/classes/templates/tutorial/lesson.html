@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head}"></head>
+<body>
+<div th:replace="~{fragments/layout :: header}"></div>
+
+<main class="page">
+	<p class="breadcrumb">
+		<a th:href="@{/tutorial(lang=${locale.code})}" th:text="${locale.code == 'en' ? 'Tutorial' : 'Обучение'}"></a>
+		→
+		<a th:href="@{/tutorial/{id}(id=${section.id()}, lang=${locale.code})}" th:text="${section.title()}"></a>
+		→
+		<span th:text="${lesson.title()}"></span>
+	</p>
+
+	<h1 th:text="${lesson.title()}">Урок</h1>
+
+	<section class="lesson-goal" th:if="${primaryVideoId != null && lessonGoal != null && !lessonGoal.isBlank()}">
+		<h2 class="lesson-goal__heading" th:text="${goalHeading}">ЦЕЛЬ УРОКА</h2>
+		<p class="lesson-goal__text preformatted" th:text="${lessonGoal}"></p>
+	</section>
+
+	<div class="pseudo-video-player"
+		 th:if="${primaryVideoId != null}"
+		 th:attr="data-video-base=${videoBaseUrl},
+		          data-locale=${locale.code},
+		          data-seek-back-label=${locale.code == 'en' ? 'Rewind 5 sec' : 'Назад 5 сек'},
+		          data-seek-forward-label=${locale.code == 'en' ? 'Forward 5 sec' : 'Вперёд 5 сек'}">
+		<div class="pseudo-video-player__frame">
+			<canvas class="pseudo-video-player__canvas" width="854" height="480" aria-label="Tutorial video"></canvas>
+			<button type="button" class="pseudo-video-player__play-overlay" aria-label="Play">&#9654;</button>
+		</div>
+		<p class="pseudo-video-player__error" hidden></p>
+		<div class="pseudo-video-player__slider-row">
+			<input type="range" class="pseudo-video-player__slider" min="0" max="0" value="0" step="1"/>
+		</div>
+		<div class="pseudo-video-player__controls">
+			<span class="pseudo-video-player__time">0:00 / 0:00</span>
+			<div class="pseudo-video-player__transport">
+				<button type="button" class="pseudo-video-player__btn pseudo-video-player__seek-back">&#171; 5s</button>
+				<button type="button" class="pseudo-video-player__btn pseudo-video-player__play-toggle"
+						th:attr="aria-label=${locale.code == 'en' ? 'Play' : 'Воспроизведение'}">&#9654;</button>
+				<button type="button" class="pseudo-video-player__btn pseudo-video-player__seek-forward">5s &#187;</button>
+			</div>
+		</div>
+	</div>
+
+	<article class="lesson-body preformatted"
+			 th:if="${primaryVideoId != null && lessonBody != null && !lessonBody.isBlank()}"
+			 th:utext="${@textLinkService.toHtml(lessonBody, locale.code)}"></article>
+	<article class="lesson-body preformatted"
+			 th:if="${primaryVideoId == null}"
+			 th:utext="${@textLinkService.toHtml(lesson.body(), locale.code)}"></article>
+
+	<div th:replace="~{fragments/tutorial_images :: block(${lesson.images()})}"
+		 th:if="${!lesson.images().isEmpty()}"></div>
+
+	<section class="lesson-comments" id="comments">
+		<h2 th:text="${locale.code == 'en' ? 'Comments' : 'Комментарии'}">Комментарии</h2>
+
+		<div class="alert alert--success" th:if="${commentMessage}" th:text="${commentMessage}"></div>
+		<div class="alert alert--error" th:if="${commentError}" th:text="${commentError}"></div>
+
+		<form class="lesson-comment-form lesson-comment-compose"
+			  th:if="${commentAuthenticated and !commentMuted}"
+			  th:action="@{/tutorial/{sectionId}/{lessonId}/comments(sectionId=${section.id()}, lessonId=${lesson.id()})}"
+			  method="post">
+			<input type="hidden" name="lang" th:value="${locale.code}"/>
+			<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+			<label class="lesson-comment-form__field">
+				<span class="lesson-comment-form__label"
+					  th:text="${locale.code == 'en' ? 'Your comment' : 'Ваш комментарий'}">Ваш комментарий</span>
+				<textarea name="body" rows="3" required
+						  th:attr="maxlength=${maxCommentLength}"
+						  th:placeholder="${locale.code == 'en' ? 'Up to 100 characters' : 'До 100 символов'}"></textarea>
+			</label>
+			<div class="lesson-comment-form__actions">
+				<button type="submit" class="btn btn--primary btn--small"
+						th:text="${locale.code == 'en' ? 'Post' : 'Отправить'}">Отправить</button>
+			</div>
+		</form>
+
+		<p class="muted" th:if="${commentAuthenticated and commentMuted}"
+		   th:text="${locale.code == 'en' ? 'You cannot post comments while muted.' : 'Вы не можете оставлять комментарии во время мьюта.'}"></p>
+		<p class="muted" th:unless="${commentAuthenticated}"
+		   th:text="${locale.code == 'en' ? 'Sign in to leave a comment.' : 'Войдите, чтобы оставить комментарий.'}"></p>
+
+		<ul class="lesson-comment-list" th:if="${!comments.isEmpty()}">
+			<li th:each="comment : ${comments}"
+				class="lesson-comment"
+				th:classappend="${comment.parentCommentId() != null} ? ' lesson-comment--reply' : ''">
+				<form class="lesson-comment__delete-form" th:if="${comment.canModerate()}"
+					  th:action="@{/tutorial/comments/{id}/delete(id=${comment.id()})}" method="post"
+					  th:attr="data-confirm-message=${comment.ownComment()
+					  	? (locale.code == 'en' ? 'Delete your comment?' : 'Удалить ваш комментарий?')
+					  	: (locale.code == 'en' ? 'Delete this comment?' : 'Удалить комментарий?')}">
+					<input type="hidden" name="sectionId" th:value="${section.id()}"/>
+					<input type="hidden" name="lessonId" th:value="${lesson.id()}"/>
+					<input type="hidden" name="lang" th:value="${locale.code}"/>
+					<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+					<button type="submit" class="btn btn--secondary btn--small"
+							th:text="${locale.code == 'en' ? 'Delete' : 'Удалить'}">Удалить</button>
+				</form>
+				<div class="lesson-comment__row">
+					<img class="lesson-comment__avatar pixel-art" th:src="${comment.avatarUrl()}" alt=""/>
+					<div class="lesson-comment__main">
+						<div class="lesson-comment__header">
+							<strong class="lesson-comment__author" th:text="${comment.username()}">user</strong>
+							<span class="lesson-comment__meta muted"
+								  th:if="${comment.replyToUsername() != null}"
+								  th:text="${locale.code == 'en'
+								  	? 'in reply to ' + comment.replyToUsername()
+								  	: 'в ответ ' + comment.replyToUsername()}"></span>
+						</div>
+						<p class="lesson-comment__body" th:text="${comment.body()}"></p>
+						<details class="lesson-comment__reply-details" th:if="${commentAuthenticated and !commentMuted}">
+							<summary th:text="${locale.code == 'en' ? 'Reply' : 'Ответить'}">Ответить</summary>
+							<form class="lesson-comment-form lesson-comment-form--reply"
+								  th:action="@{/tutorial/{sectionId}/{lessonId}/comments/{parentId}/reply(sectionId=${section.id()}, lessonId=${lesson.id()}, parentId=${comment.id()})}"
+								  method="post">
+								<input type="hidden" name="lang" th:value="${locale.code}"/>
+								<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+								<label class="lesson-comment-form__field">
+									<textarea name="body" rows="2" required
+											  th:attr="maxlength=${maxCommentLength}"
+											  th:placeholder="${locale.code == 'en' ? 'Up to 100 characters' : 'До 100 символов'}"></textarea>
+								</label>
+								<div class="lesson-comment-form__actions">
+									<button type="submit" class="btn btn--secondary btn--small"
+											th:text="${locale.code == 'en' ? 'Send reply' : 'Отправить ответ'}"></button>
+								</div>
+							</form>
+						</details>
+					</div>
+					<div class="lesson-comment__moderation" th:if="${comment.canMuteAuthor()}">
+						<div class="lesson-comment-mute-panel">
+							<p class="lesson-comment-mute-panel__title"
+							   th:text="${locale.code == 'en' ? 'Mute user' : 'Мьют пользователя'}">Мьют пользователя</p>
+							<form class="lesson-comment-mute-form"
+								  th:action="@{/tutorial/comments/{id}/mute(id=${comment.id()})}" method="post">
+								<input type="hidden" name="sectionId" th:value="${section.id()}"/>
+								<input type="hidden" name="lessonId" th:value="${lesson.id()}"/>
+								<input type="hidden" name="lang" th:value="${locale.code}"/>
+								<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+								<label class="lesson-comment-form__field">
+									<span class="lesson-comment-form__label"
+										  th:text="${locale.code == 'en' ? 'Minutes' : 'Минут'}">Минут</span>
+									<input type="number" name="minutes" min="1" max="10080" value="60" required/>
+								</label>
+								<label class="lesson-comment-form__field">
+									<span class="lesson-comment-form__label"
+										  th:text="${locale.code == 'en' ? 'Reason' : 'Причина'}">Причина</span>
+									<input type="text" name="reason" required maxlength="500"
+										   th:placeholder="${locale.code == 'en' ? 'Reason for mute' : 'Причина мьюта'}"/>
+								</label>
+								<div class="lesson-comment-form__actions">
+									<button type="submit" class="btn btn--secondary btn--small"
+											th:text="${locale.code == 'en' ? 'Mute' : 'Мьют'}">Мьют</button>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+			</li>
+		</ul>
+		<p class="muted" th:if="${comments.isEmpty()}"
+		   th:text="${locale.code == 'en' ? 'No comments yet.' : 'Комментариев пока нет.'}"></p>
+	</section>
+</main>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+<script th:if="${primaryVideoId != null}" th:src="@{/js/pseudo-video.js}"></script>
+</body>
+</html>

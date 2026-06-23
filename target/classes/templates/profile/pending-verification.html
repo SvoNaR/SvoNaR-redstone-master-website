@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head}"></head>
+<body>
+<div th:replace="~{fragments/layout :: header}"></div>
+
+<main class="page page--auth">
+	<div class="auth-center auth-center--wide">
+		<h1 th:text="${pageTitle}">Подтверждение почты</h1>
+
+		<section class="profile-card auth-card verify-email-card">
+			<div class="auth-card-preview">
+				<div class="profile-avatar profile-avatar--large profile-avatar--pending"
+					 th:text="${#strings.substring(pendingUsername, 0, 1).toUpperCase()}">S</div>
+				<p class="profile-username" th:text="${pendingUsername}">user</p>
+			</div>
+
+			<div class="alert alert--success" th:if="${resent}">
+				<p th:text="${locale.code == 'en'
+					? 'Confirmation email sent again. Check your inbox.'
+					: 'Письмо с подтверждением отправлено повторно. Проверьте почту.'}"></p>
+			</div>
+			<div class="alert alert--success" th:if="${emailChanged}">
+				<p th:text="${locale.code == 'en'
+					? 'Email updated. We sent a confirmation email to the new address.'
+					: 'Почта изменена. На новый адрес отправлено письмо с подтверждением.'}"></p>
+			</div>
+
+			<p th:text="${locale.code == 'en'
+				? 'To finish creating your account, confirm your email address. We sent a confirmation email to:'
+				: 'Чтобы завершить создание аккаунта, подтвердите адрес почты. На указанный адрес отправлено письмо:'}"></p>
+			<p class="verify-email-address" th:text="${pendingEmail}"></p>
+			<p th:text="${locale.code == 'en'
+				? 'Open the link in the email. The link is valid for 24 hours.'
+				: 'Перейдите по ссылке в письме. Ссылка действует 24 часа.'}"></p>
+
+			<p class="alert alert--warn" th:text="${locale.code == 'en'
+				? 'If you do not confirm your email within 24 hours, your registration data will be deleted automatically. You will need to sign up again.'
+				: 'Если вы не подтвердите почту в течение 24 часов, данные регистрации будут автоматически удалены. Потребуется зарегистрироваться заново.'}"></p>
+			<p class="muted" th:if="${verificationExpiresAt != null}"
+			   th:text="|${locale.code == 'en' ? 'Confirm before:' : 'Подтвердите до:'} ${#temporals.format(verificationExpiresAt, 'dd.MM.yyyy HH:mm')}|"></p>
+
+			<p th:if="${verificationUrl}" class="verify-dev-link muted"
+			   th:text="${locale.code == 'en'
+				? 'SMTP is off — dev link:'
+				: 'SMTP отключён — ссылка для разработки:'}"></p>
+			<p th:if="${verificationUrl}" class="verify-dev-link">
+				<a th:href="${verificationUrl}" th:text="${verificationUrl}"></a>
+			</p>
+
+			<form th:action="@{/profile/pending-verification/resend}" method="post" class="verify-email-actions">
+				<input type="hidden" name="lang" th:value="${locale.code}"/>
+				<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+				<button type="submit" class="btn btn--secondary"
+						th:text="${locale.code == 'en' ? 'Resend email' : 'Отправить письмо снова'}"></button>
+			</form>
+
+			<h2 th:text="${locale.code == 'en' ? 'Change email' : 'Сменить почту'}"></h2>
+			<p th:text="${locale.code == 'en'
+				? 'If you entered the wrong address, specify the correct email below.'
+				: 'Если вы указали адрес по ошибке, укажите правильную почту ниже.'}"></p>
+
+			<form id="pending-change-email-form" class="auth-form"
+				  th:action="@{/profile/pending-verification/change-email}"
+				  th:object="${changeEmailForm}" method="post">
+				<input type="hidden" name="lang" th:value="${locale.code}"/>
+				<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+				<label>
+					<span th:text="${locale.code == 'en' ? 'Email' : 'Почта'}"></span>
+					<input type="email" th:field="*{email}" autocomplete="email"/>
+					<span class="field-error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></span>
+				</label>
+			</form>
+
+			<div class="card-actions">
+				<a class="btn btn--secondary" th:href="@{/profile(lang=${locale.code}, tab='register')}"
+				   th:text="${locale.code == 'en' ? 'Back to registration' : 'К регистрации'}"></a>
+				<button type="submit" form="pending-change-email-form" class="btn btn--primary"
+						th:text="${locale.code == 'en' ? 'Change email' : 'Сменить почту'}"></button>
+			</div>
+		</section>
+	</div>
+</main>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+</body>
+</html>

@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<body>
+<nav class="profile-tabs moderation-tabs" th:fragment="nav">
+	<a th:classappend="${currentPath == '/admin' ? ' active' : ''}"
+	   th:href="@{/admin(lang=${locale.code})}"
+	   th:text="${locale.code == 'en' ? 'Overview' : 'Обзор'}">Обзор</a>
+	<a th:classappend="${currentPath.startsWith('/admin/lesson-submissions') ? ' active' : ''}"
+	   th:href="@{/admin/lesson-submissions(lang=${locale.code})}"
+	   th:text="${locale.code == 'en' ? 'Lesson review' : 'Проверка уроков'}">Проверка уроков</a>
+	<a th:classappend="${currentPath.startsWith('/admin/moderators') ? ' active' : ''}"
+	   th:href="@{/admin/moderators(lang=${locale.code})}"
+	   th:text="${locale.code == 'en' ? 'Moderators' : 'Модераторы'}">Модераторы</a>
+	<a th:classappend="${currentPath.startsWith('/admin/unmute-moderator') ? ' active' : ''}"
+	   th:href="@{/admin/unmute-moderator(lang=${locale.code})}"
+	   th:text="${locale.code == 'en' ? 'Unmute moderators' : 'Снять мьют'}">Снять мьют</a>
+</nav>
+</body>
+</html>

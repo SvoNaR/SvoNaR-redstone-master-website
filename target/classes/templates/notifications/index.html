@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head}"></head>
+<body>
+<div th:replace="~{fragments/layout :: header}"></div>
+
+<main class="page">
+	<h1 th:text="${locale.code == 'en' ? 'Notifications' : 'Уведомления'}">Уведомления</h1>
+
+	<div class="notifications-toolbar">
+		<div class="profile-tabs">
+			<a th:classappend="${activeTab == 'active' ? ' active' : ''}"
+			   th:href="@{/notifications(lang=${locale.code}, tab='active')}"
+			   th:text="${locale.code == 'en' ? 'Active' : 'Актуальные'}">Актуальные</a>
+			<a th:classappend="${activeTab == 'read' ? ' active' : ''}"
+			   th:href="@{/notifications(lang=${locale.code}, tab='read')}"
+			   th:text="${locale.code == 'en' ? 'Read' : 'Прочитанные'}">Прочитанные</a>
+		</div>
+		<form th:if="${activeTab == 'active' and hasActiveNotifications}"
+			  th:action="@{/notifications/read-all}" method="post">
+			<input type="hidden" name="lang" th:value="${locale.code}"/>
+			<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+			<button type="submit" class="btn btn--secondary btn--small"
+					th:text="${locale.code == 'en' ? 'Mark all as read' : 'Прочитать все'}">Прочитать все</button>
+		</form>
+	</div>
+
+	<section class="profile-card notifications-empty" th:if="${#lists.isEmpty(notifications)}">
+		<p th:if="${activeTab == 'active'}" th:text="${locale.code == 'en'
+			? 'No active notifications. You are all caught up!'
+			: 'Актуальных уведомлений нет. Всё прочитано!'}"></p>
+		<p th:if="${activeTab == 'read'}" th:text="${locale.code == 'en'
+			? 'No read notifications yet.'
+			: 'Прочитанных уведомлений пока нет.'}"></p>
+	</section>
+
+	<div class="notifications-list" th:unless="${#lists.isEmpty(notifications)}">
+		<article class="notification-card card--actions" th:each="notification : ${notifications}">
+			<form class="notification-card__dismiss"
+				  th:action="@{/notifications/{id}/delete(id=${notification.id()})}"
+				  method="post"
+				  th:attr="data-confirm-message=${locale.code == 'en' ? 'Delete this notification?' : 'Удалить это уведомление?'}">
+				<input type="hidden" name="lang" th:value="${locale.code}"/>
+				<input type="hidden" name="tab" th:value="${activeTab}"/>
+				<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+				<button type="submit"
+						th:attr="aria-label=${locale.code == 'en' ? 'Delete notification' : 'Удалить уведомление'},
+						         title=${locale.code == 'en' ? 'Delete' : 'Удалить'}">×</button>
+			</form>
+			<div class="notification-card__icon" th:switch="${notification.type().name()}">
+				<span th:case="'EMAIL_VERIFICATION'">&#9993;</span>
+				<span th:case="'AVATAR_SETUP'">&#128444;</span>
+				<span th:case="'NEWS'">&#128240;</span>
+				<span th:case="'USER_MUTE'">&#128683;</span>
+				<span th:case="'USER_UNMUTE'">&#9989;</span>
+				<span th:case="'COMMENT_REPLY'">&#128172;</span>
+				<span th:case="'LESSON_MODERATION'">&#128221;</span>
+			</div>
+			<div class="notification-card__body">
+				<h2 th:text="${notification.title()}">Title</h2>
+				<p th:text="${notification.message()}">Message</p>
+			</div>
+			<div class="card-actions" th:if="${activeTab == 'active'}">
+				<a th:if="${notification.type().name() == 'NEWS'}"
+				   class="btn btn--primary btn--small"
+				   th:href="@{/notifications/{id}/open(id=${notification.id()}, lang=${locale.code})}"
+				   th:text="${notification.actionLabel()}">Action</a>
+				<a th:unless="${notification.type().name() == 'NEWS'}"
+				   class="btn btn--primary btn--small" th:href="${notification.actionUrl()}"
+				   th:text="${notification.actionLabel()}">Action</a>
+				<form th:action="@{/notifications/{id}/read(id=${notification.id()})}" method="post">
+					<input type="hidden" name="lang" th:value="${locale.code}"/>
+					<input type="hidden" name="tab" th:value="${activeTab}"/>
+					<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+					<button type="submit" class="btn btn--secondary btn--small"
+							th:text="${locale.code == 'en' ? 'Mark as read' : 'Прочитано'}">Прочитано</button>
+				</form>
+			</div>
+			<div class="card-actions" th:if="${activeTab == 'read'}">
+				<a class="btn btn--secondary btn--small" th:href="${notification.actionUrl()}"
+				   th:text="${notification.actionLabel()}">Action</a>
+			</div>
+		</article>
+	</div>
+</main>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+</body>
+</html>

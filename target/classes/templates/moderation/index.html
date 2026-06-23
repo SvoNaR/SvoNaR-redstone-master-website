@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head}"></head>
+<body>
+<div th:replace="~{fragments/layout :: header}"></div>
+
+<main class="page">
+	<h1 th:text="${pageTitle}">Модерация</h1>
+
+	<div th:replace="~{fragments/moderation :: nav}"></div>
+
+	<p class="moderation-intro" th:if="${locale.code == 'en'}">
+		Tools for creating mod lessons and pseudo-video from regular video files (PNG frames at
+		<span th:text="${videoFps} + ' fps, ' + ${videoWidth} + '×' + ${videoHeight}"></span>).
+	</p>
+	<p class="moderation-intro" th:unless="${locale.code == 'en'}">
+		Инструменты для уроков мода и псевдо-видео из обычного видео (кадры PNG,
+		<span th:text="${videoFps} + ' fps, ' + ${videoWidth} + '×' + ${videoHeight}"></span>).
+	</p>
+
+	<section class="section-block">
+		<h2 th:text="${locale.code == 'en' ? 'Quick start' : 'Быстрый старт'}">Быстрый старт</h2>
+		<div class="moderation-cards">
+			<a class="moderation-card-link" th:href="@{/moderation/pseudo-video(lang=${locale.code})}">
+				<span class="moderation-card-link__title"
+					  th:text="${locale.code == 'en' ? 'Convert video to pseudo-video' : 'Конвертировать видео в псевдо-видео'}"></span>
+				<span class="moderation-card-link__desc"
+					  th:text="${locale.code == 'en'
+					  	? 'Upload mp4/webm and get PNG frames for the mod player.'
+					  	: 'Загрузите mp4/webm и получите кадры PNG для плеера мода.'}"></span>
+			</a>
+			<a class="moderation-card-link" th:href="@{/moderation/lesson(lang=${locale.code})}">
+				<span class="moderation-card-link__title"
+					  th:text="${locale.code == 'en' ? 'Create a full lesson draft' : 'Создать черновик полного урока'}"></span>
+				<span class="moderation-card-link__desc"
+					  th:text="${locale.code == 'en'
+					  	? 'Text, titles, pseudo-video, JAR build and submission for review.'
+					  	: 'Текст, заголовки, псевдо-видео, сборка JAR и отправка на проверку.'}"></span>
+			</a>
+		</div>
+	</section>
+
+	<section class="section-block">
+		<h2 th:text="${locale.code == 'en' ? 'Workflow' : 'Порядок работы'}">Порядок работы</h2>
+		<ol class="moderation-workflow">
+			<li>
+				<a th:href="@{/moderation/pseudo-video(lang=${locale.code})}"
+				   th:text="${locale.code == 'en' ? 'Convert video to pseudo-video (PNG frames)' : 'Конвертировать видео в псевдо-видео (кадры PNG)'}"></a>
+			</li>
+			<li>
+				<a th:href="@{/moderation/lesson(lang=${locale.code})}"
+				   th:text="${locale.code == 'en' ? 'Create a full lesson draft' : 'Создать черновик полного урока'}"></a>
+			</li>
+			<li th:text="${locale.code == 'en' ? 'Build a Fabric JAR and submit to administrator' : 'Собрать JAR для Fabric и отправить администратору'}"></li>
+		</ol>
+	</section>
+
+	<section class="section-block">
+		<h2 th:text="${locale.code == 'en' ? 'All sections' : 'Все разделы'}">Все разделы</h2>
+		<div class="moderation-cards">
+			<a class="moderation-card-link" th:href="@{/moderation/pseudo-video(lang=${locale.code})}">
+				<span class="moderation-card-link__title"
+					  th:text="${locale.code == 'en' ? 'Pseudo-video converter' : 'Конвертер псевдо-видео'}"></span>
+			</a>
+			<a class="moderation-card-link" th:href="@{/moderation/lesson(lang=${locale.code})}">
+				<span class="moderation-card-link__title"
+					  th:text="${locale.code == 'en' ? 'Lesson editor' : 'Редактор урока'}"></span>
+			</a>
+			<a class="moderation-card-link" th:href="@{/moderation/submissions(lang=${locale.code})}">
+				<span class="moderation-card-link__title"
+					  th:text="${locale.code == 'en' ? 'My submissions' : 'Мои отправки'}"></span>
+			</a>
+			<a class="moderation-card-link" th:href="@{/moderation/mute-user(lang=${locale.code})}">
+				<span class="moderation-card-link__title"
+					  th:text="${locale.code == 'en' ? 'Mute user (comments)' : 'Мьют пользователя (комментарии)'}"></span>
+			</a>
+			<a class="moderation-card-link" th:href="@{/moderation/unmute-user(lang=${locale.code})}">
+				<span class="moderation-card-link__title"
+					  th:text="${locale.code == 'en' ? 'Unmute user (comments)' : 'Снять мьют с пользователя (комментарии)'}"></span>
+			</a>
+		</div>
+	</section>
+
+	<section class="section-block">
+		<h2 th:text="${locale.code == 'en' ? 'Requirements' : 'Требования'}">Требования</h2>
+		<div class="note">
+			<ul class="placeholder-list">
+				<li th:text="${locale.code == 'en' ? 'FFmpeg must be installed on the server (see app.moderation.ffmpeg-executable).' : 'На сервере нужен FFmpeg (app.moderation.ffmpeg-executable).'}"></li>
+				<li th:text="${locale.code == 'en' ? 'Upload mp4, webm, mov or other formats supported by FFmpeg.' : 'Поддерживаются mp4, webm, mov и другие форматы FFmpeg.'}"></li>
+				<li th:text="${locale.code == 'en' ? 'The mod plays PNG frame sequences from assets/redstone-master/tutorials/videos/{id}/.' : 'Мод воспроизводит последовательность PNG из assets/redstone-master/tutorials/videos/{id}/.'}"></li>
+			</ul>
+		</div>
+	</section>
+</main>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+</body>
+</html>

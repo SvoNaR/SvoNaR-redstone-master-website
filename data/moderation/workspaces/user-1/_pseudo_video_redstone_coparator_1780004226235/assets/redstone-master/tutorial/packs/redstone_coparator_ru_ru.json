@@ -1,0 +1,14 @@
+{
+  "sections" : [ {
+    "id" : "_pseudo_video",
+    "title" : "_pseudo_video",
+    "lessons" : [ {
+      "id" : "redstone_coparator",
+      "title" : "Псевдо-видео «redstone_coparator» (черновик модератора).",
+      "body" : "Псевдо-видео «redstone_coparator» (черновик модератора).",
+      "search" : "псевдо-видео «redstone_coparator» (черновик модератора).",
+      "images" : [ ],
+      "videos" : [ "redstone_coparator" ]
+    } ]
+  } ]
+}

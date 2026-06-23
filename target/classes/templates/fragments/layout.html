@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org"
+	  xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:fragment="head">
+	<meta charset="UTF-8"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1"/>
+	<title th:text="${pageTitle} + ' — ' + ${mod.name}">Redstone Master</title>
+	<link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+<header class="site-header" th:fragment="header">
+	<div class="site-header__inner">
+		<a class="brand" th:href="@{/(lang=${locale.code})}" th:text="${mod.name}">Redstone Master</a>
+		<nav class="site-nav">
+			<a class="site-nav-link"
+			   th:classappend="${currentPath == '/' || currentPath == '' ? ' active' : ''}"
+			   th:href="@{/(lang=${locale.code})}"
+			   th:text="${locale.code == 'en' ? 'Home' : 'Главная'}">Главная</a>
+			<a class="site-nav-link"
+			   th:classappend="${currentPath.startsWith('/news') ? ' active' : ''}"
+			   th:href="@{/news(lang=${locale.code})}"
+			   th:text="${locale.code == 'en' ? 'News' : 'Новости'}">Новости</a>
+			<a class="site-nav-link"
+			   th:classappend="${currentPath.startsWith('/tutorial') ? ' active' : ''}"
+			   th:href="@{/tutorial(lang=${locale.code})}"
+			   th:text="${locale.code == 'en' ? 'Tutorial' : 'Обучение'}">Обучение</a>
+			<a class="site-nav-link"
+			   th:classappend="${currentPath.startsWith('/settings') ? ' active' : ''}"
+			   th:href="@{/settings(lang=${locale.code})}"
+			   th:text="${locale.code == 'en' ? 'Settings' : 'Настройки'}">Настройки</a>
+			<a sec:authorize="hasAnyRole('MODERATOR','ADMIN')"
+			   class="site-nav-link"
+			   th:classappend="${currentPath.startsWith('/moderation') ? ' active' : ''}"
+			   th:href="@{/moderation(lang=${locale.code})}"
+			   th:text="${locale.code == 'en' ? 'Moderation' : 'Модерация'}">Модерация</a>
+			<a sec:authorize="hasRole('ADMIN')"
+			   class="site-nav-link"
+			   th:classappend="${currentPath.startsWith('/admin') ? ' active' : ''}"
+			   th:href="@{/admin(lang=${locale.code})}"
+			   th:text="${locale.code == 'en' ? 'Administration' : 'Администрация'}">Администрация</a>
+		</nav>
+		<div class="header-actions">
+			<div class="lang-switch">
+				<a th:classappend="${locale.code == 'ru' ? ' active' : ''}"
+				   th:href="@{${currentPath}(lang='ru')}">RU</a>
+				<a th:classappend="${locale.code == 'en' ? ' active' : ''}"
+				   th:href="@{${currentPath}(lang='en')}">EN</a>
+			</div>
+			<a class="profile-nav-link"
+			   th:classappend="${currentPath.startsWith('/profile') ? ' active' : ''}"
+			   th:href="@{/profile(lang=${locale.code})}">
+				<span th:text="${locale.code == 'en' ? 'Profile' : 'Профиль'}">Профиль</span>
+				<img class="profile-nav-avatar" th:if="${headerUser != null}"
+					 th:src="${headerUser.avatarUrl()}" th:alt="${headerUser.username()}"
+					 width="16" height="16"/>
+			</a>
+			<a sec:authorize="isAuthenticated()"
+			   class="notifications-nav-link"
+			   th:classappend="${currentPath.startsWith('/notifications') ? ' active' : ''}"
+			   th:href="@{/notifications(lang=${locale.code})}"
+			   th:attr="aria-label=${locale.code == 'en' ? 'Notifications' : 'Уведомления'},
+			            title=${locale.code == 'en' ? 'Notifications' : 'Уведомления'}">
+				<svg class="notifications-bell" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+					<path d="M12 2a5 5 0 0 0-5 5v2.1c0 .9-.3 1.8-.9 2.5L4.3 14.2A1 1 0 0 0 5 16h14a1 1 0 0 0 .7-1.8l-1.8-2.6a4 4 0 0 1-.9-2.5V7a5 5 0 0 0-5-5zm0 20a2.5 2.5 0 0 0 2.45-2h-4.9A2.5 2.5 0 0 0 12 22z"/>
+				</svg>
+				<span class="notifications-badge"
+					  th:if="${headerUser != null && headerUser.notificationCount() > 0}"
+					  th:text="${headerUser.notificationBadge()}">0</span>
+			</a>
+		</div>
+	</div>
+</header>
+
+<footer class="site-footer" th:fragment="footer">
+	<p>
+		<span th:text="${mod.name}">Redstone Master</span>
+		<span th:text="' v' + ${mod.version}">v1.0.0</span>
+		·
+		<a th:href="${mod.repositoryUrl}" th:text="${mod.repositoryUrl}">GitHub</a>
+	</p>
+
+	<div class="confirm-dialog" id="confirm-dialog" hidden aria-hidden="true">
+		<div class="confirm-dialog__backdrop" data-confirm-cancel></div>
+		<div class="confirm-dialog__panel" role="dialog" aria-modal="true" aria-labelledby="confirm-dialog-message">
+			<p class="confirm-dialog__message" id="confirm-dialog-message"></p>
+			<div class="confirm-dialog__actions">
+				<button type="button" class="btn btn--primary" data-confirm-accept
+						th:text="${locale.code == 'en' ? 'Confirm' : 'Подтвердить'}">Подтвердить</button>
+				<button type="button" class="btn btn--secondary" data-confirm-cancel
+						th:text="${locale.code == 'en' ? 'Cancel' : 'Отмена'}">Отмена</button>
+			</div>
+		</div>
+	</div>
+	<script th:src="@{/js/confirm-dialog.js}"></script>
+</footer>
+</body>
+</html>

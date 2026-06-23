@@ -1,0 +1,66 @@
+	<section class="section-block" id="install" th:fragment="install-section">
+		<h2 th:text="${locale.code == 'en' ? 'Installation' : 'Установка'}">Установка</h2>
+
+		<article class="install-guide" id="install-player">
+			<h3 th:text="${install.playerGuide().title()}">Для игрока</h3>
+			<p class="install-guide__desc"
+			   th:utext="${@textLinkService.toHtml(install.playerGuide().description(), locale.code)}"></p>
+			<div class="cards">
+				<div class="card">
+					<h4 th:text="${locale.code == 'en' ? 'Requirements' : 'Требования'}">Требования</h4>
+					<table class="data-table">
+						<tbody>
+						<tr th:each="row : ${install.playerGuide().requirements()}">
+							<th th:text="${row.component()}"></th>
+							<td th:text="${row.version()}"></td>
+						</tr>
+						</tbody>
+					</table>
+				</div>
+				<div class="card">
+					<h4 th:text="${locale.code == 'en' ? 'Steps' : 'Шаги'}">Шаги</h4>
+					<ol class="steps">
+						<li th:each="step : ${install.playerGuide().steps()}"
+							th:utext="${@textLinkService.toHtml(step, locale.code)}"></li>
+					</ol>
+				</div>
+			</div>
+			<p class="note" th:each="note : ${install.playerGuide().notes()}"
+			   th:utext="${@textLinkService.toHtml(note, locale.code)}"></p>
+		</article>
+
+		<article class="install-guide" id="install-developer">
+			<h3 th:text="${install.developerGuide().title()}">Для разработчиков</h3>
+			<p class="install-guide__desc"
+			   th:utext="${@textLinkService.toHtml(install.developerGuide().description(), locale.code)}"></p>
+			<div class="cards">
+				<div class="card">
+					<h4 th:text="${locale.code == 'en' ? 'Requirements' : 'Требования'}">Требования</h4>
+					<table class="data-table">
+						<tbody>
+						<tr th:each="row : ${install.developerGuide().requirements()}">
+							<th th:text="${row.component()}"></th>
+							<td th:text="${row.version()}"></td>
+						</tr>
+						</tbody>
+					</table>
+				</div>
+				<div class="card">
+					<h4 th:text="${locale.code == 'en' ? 'Steps' : 'Шаги'}">Шаги</h4>
+					<ol class="steps">
+						<li th:each="step : ${install.developerGuide().steps()}"
+							th:utext="${@textLinkService.toHtml(step, locale.code)}"></li>
+					</ol>
+				</div>
+			</div>
+			<p class="note">
+				<span th:text="${locale.code == 'en' ? 'Built JAR: ' : 'Собранный JAR: '}"></span>
+				<code th:text="${install.jarPath()}"></code>
+				·
+				<span th:text="${locale.code == 'en' ? 'Config: ' : 'Конфиг: '}"></span>
+				<code th:text="${install.configPath()}"></code>
+			</p>
+			<p class="note" th:each="note : ${install.developerGuide().notes()}"
+			   th:utext="${@textLinkService.toHtml(note, locale.code)}"></p>
+		</article>
+	</section>
