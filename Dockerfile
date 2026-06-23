@@ -17,7 +17,6 @@ RUN mkdir -p /data/avatars/users /data/moderation/workspaces /data/moderation/ja
 COPY --from=build /app/target/redstone-master-web-1.0.0.jar app.jar
 
 ENV JAVA_OPTS="-Dfile.encoding=UTF-8"
-VOLUME ["/data"]
 
 EXPOSE 8080
 ENTRYPOINT ["sh", "-c", "exec java $JAVA_OPTS -jar app.jar"]
