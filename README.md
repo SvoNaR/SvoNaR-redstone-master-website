@@ -2,9 +2,7 @@
 
 Companion-веб-приложение для Fabric-мода **Redstone Master** (Minecraft 1.21.11).
 
-Spring Boot **3**, Java **21**, Thymeleaf, H2. Не входит в сборку мода — живёт в `other_projects/redstone-master-web/`.
-
-При сборке Maven копирует языковые файлы, каталог обучения и текстуры из мода (`src/main/resources/assets/redstone-master/` в корне репозитория).
+Spring Boot **3**, Java **21**, Thymeleaf, H2. Standalone-репозиторий: языковые файлы, каталог обучения и текстуры мода лежат в `src/main/resources/mod-data/` и `src/main/resources/static/mod-assets/`.
 
 ## Возможности
 
@@ -29,15 +27,23 @@ Spring Boot **3**, Java **21**, Thymeleaf, H2. Не входит в сборку
 ## Быстрый старт
 
 ```bash
-cd other_projects/redstone-master-web
 mvn spring-boot:run
 ```
 
 Windows:
 
 ```bat
-other_projects\redstone-master-web\run.bat
+run.bat
 ```
+
+## Деплой на Railway
+
+1. Подключите репозиторий к Railway (сборка через `Dockerfile` + `railway.toml`).
+2. **Variables** (см. `railway.env.example`):
+   - `SPRING_PROFILES_ACTIVE` = `production,railway` (с volume `/data`) или `production`
+   - `APP_ADMIN_PASSWORD` — обязательно
+   - `APP_BASE_URL` — URL Railway, например `https://redstone-master.up.railway.app`
+3. Для сохранения БД: Volume с mount path `/data`.
 
 Сайт: http://localhost:8080  
 Язык: `?lang=en` (по умолчанию `ru`).
@@ -54,7 +60,7 @@ other_projects\redstone-master-web\run.bat
 
 Пример локальных настроек: `application-local.properties.example` → `application-local.properties`.  
 Production: `application-production-local.properties.example` + профиль `production`.  
-**Railway:** [`docs/RAILWAY_DEPLOY.md`](../docs/RAILWAY_DEPLOY.md) + `railway.env.example`.
+**Railway:** `railway.env.example`, `Dockerfile`, `railway.toml`.
 
 ## Страницы
 

@@ -1,0 +1,7 @@
+target/
+.git/
+.idea/
+.tools/
+data/
+*.iml
+application-local.properties

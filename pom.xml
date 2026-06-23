@@ -15,12 +15,11 @@
 	<artifactId>redstone-master-web</artifactId>
 	<version>1.0.0</version>
 	<name>redstone-master-web</name>
-	<description>Веб-приложение Redstone Master (отдельно от Fabric-мода)</description>
+	<description>Веб-приложение Redstone Master (standalone)</description>
 
 	<properties>
 		<java.version>21</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<mod.resources.dir>${project.basedir}/../../src/main/resources/assets/redstone-master</mod.resources.dir>
 	</properties>
 
 	<dependencies>
@@ -77,80 +76,6 @@
 				<configuration>
 					<jvmArguments>-Dfile.encoding=UTF-8</jvmArguments>
 				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-resources-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>copy-mod-lang</id>
-						<phase>generate-resources</phase>
-						<goals>
-							<goal>copy-resources</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>${project.build.outputDirectory}/mod-data/lang</outputDirectory>
-							<resources>
-								<resource>
-									<directory>${mod.resources.dir}/lang</directory>
-									<includes>
-										<include>ru_ru.json</include>
-										<include>en_us.json</include>
-									</includes>
-								</resource>
-							</resources>
-						</configuration>
-					</execution>
-					<execution>
-						<id>copy-mod-tutorial</id>
-						<phase>generate-resources</phase>
-						<goals>
-							<goal>copy-resources</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>${project.build.outputDirectory}/mod-data/tutorial</outputDirectory>
-							<resources>
-								<resource>
-									<directory>${mod.resources.dir}/tutorial</directory>
-									<includes>
-										<include>ru_ru.json</include>
-										<include>en_us.json</include>
-									</includes>
-								</resource>
-							</resources>
-						</configuration>
-					</execution>
-					<execution>
-						<id>copy-mod-tutorial-textures</id>
-						<phase>generate-resources</phase>
-						<goals>
-							<goal>copy-resources</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>${project.build.outputDirectory}/static/mod-assets</outputDirectory>
-							<resources>
-								<resource>
-									<directory>${mod.resources.dir}/textures/tutorial</directory>
-								</resource>
-							</resources>
-						</configuration>
-					</execution>
-					<execution>
-						<id>copy-mod-tutorial-videos</id>
-						<phase>generate-resources</phase>
-						<goals>
-							<goal>copy-resources</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>${project.build.outputDirectory}/static/mod-assets/tutorials/videos</outputDirectory>
-							<resources>
-								<resource>
-									<directory>${mod.resources.dir}/tutorials/videos</directory>
-								</resource>
-							</resources>
-						</configuration>
-					</execution>
-				</executions>
 			</plugin>
 		</plugins>
 	</build>

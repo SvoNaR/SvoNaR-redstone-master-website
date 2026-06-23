@@ -1,0 +1,558 @@
+{
+  "sections": [
+    {
+      "id": "redstone_signal",
+      "title": "Redstone signal",
+      "summary": "Signals, dust, horizontal and vertical lines.",
+      "search": "редстоун сигнал пыль",
+      "sources": "Sources: Minecraft Wiki — Redstone circuits (https://minecraft.wiki/w/Redstone_circuits), block mechanic pages; summarized by Redstone Master.",
+      "images": [
+        {
+          "path": "textures/tutorial/sections/redstone_signal.png",
+          "caption": "Overview illustration for the Redstone Signal section"
+        }
+      ],
+      "lessons": [
+        {
+          "id": "carry_signal",
+          "title": "Carry a redstone signal",
+          "body": "LESSON GOAL\nWire a power source, redstone dust, and an output (lamp) so the signal reaches the lamp reliably while you understand the 0–15 power scale.\n\nSIGNAL BASICS\nRedstone power is an integer from 0 (off) to 15 (maximum). Lamps, pistons, hoppers, and repeaters usually turn on at power ≥1, but comparators, analog circuits, and counters depend on the exact number.\n\nDust on the ground or on a block carries power along a line: each segment away from the source decreases power by 1. Levers and redstone blocks typically start at 15; after 15 dust segments only 1 remains, then the line dies. Without a repeater, horizontal dust runs are limited to 15 blocks.\n\nSTRONG VS WEAK POWER\nStrong power (from a redstone block, repeater output, comparator output, side torch, etc.) can power adjacent blocks so dust and mechanisms on other faces of that block activate. Weak power (lever, button, pressure plate, dust line) feeds adjacent dust and devices but does not always power through a block the same way strong power does. Example: a side torch strongly powers the block and a lamp on top; a lever on a block weakly powers dust on top but not always below without extra wiring.\n\nPRACTICE: LEVER → DUST → LAMP\n1. Place a solid block. Put a lever on top; it outputs 15 when on.\n2. Run dust from the lever. The first segment is 14, then 13, and so on. Connect a redstone lamp so dust touches it or powers the block under the lamp.\n3. Toggle the lever—the lamp should follow (about 1 tick / 0.05 s propagation delay).\n\nTROUBLESHOOTING\n• Line longer than 15 dust—add a repeater (see Repeater section).\n• Dust in mid-air or on glass without support—it will not link.\n• Step up 1 block—dust does not climb alone; use a block with dust on top, a torch, or a repeater.\n• Lamp not tied to the line—extend dust or strongly power the support block.\n\nGOING FURTHER\nDust on top of blocks continues lines; 90° turns use raised blocks, repeaters, or torches. A redstone block outputs 15 on all faces—great for testing.\n\nRELATED LESSONS\nPower sources, horizontal routing, vertical routing, repeaters.",
+          "search": "carry signal lamp strength 0-15 dust lever weak strong power",
+          "images": [
+            {
+              "path": "textures/tutorial/carry_signal_lever.png",
+              "caption": "Lever as a redstone power source at strength 15"
+            },
+            {
+              "path": "textures/tutorial/carry_signal_dust.png",
+              "caption": "Redstone dust line carrying signal from the source"
+            },
+            {
+              "path": "textures/tutorial/carry_signal_lamp.png",
+              "caption": "Redstone lamp powered by a dust line"
+            }
+          ],
+          "videos": [
+            "carry_signal_demo"
+          ]
+        },
+        {
+          "id": "power_sources",
+          "title": "Learn power sources",
+          "body": "LESSON GOAL\nTell steady sources apart from pulses, know each source’s strength, and wire several to lamps to compare behavior.\n\nSTEADY SOURCES\n• Redstone block—15 on all faces, strong power; always on, bulky and expensive.\n• Lever—15 while on; weak power to the attached face; best manual switch.\n• Pressure plate—15 while an entity stands on it; wood also reacts to dropped items and arrows.\n• Weighted pressure plate—strength scales with entity count (up to 15).\n• Tripwire hook—15 while the line is triggered.\n\nPULSES AND SHORT SOURCES\n• Button (stone ~1.5 s, wood ~1 s)—brief pulse to 15 then off; ideal for droppers and one-shot crafts.\n• Target block—pulse on hit; strength depends on accuracy (Target section).\n• Daylight detector, sculk sensor, observer—conditional sources (their own lessons).\n\nPRACTICE\nBuild a “showcase”: parallel lamps, each fed by a different source through short dust. Lever stays on; button blinks; plate only works while you stand on it. Note which sources strongly power blocks versus only feeding dust.\n\nCIRCUIT IMPLICATIONS\nUse pulses when a device must fire once (dropper, crafter). Use steady power to hold a door open, keep a piston extended, or lock a hopper (redstone signal from below stops hopper transfer). A long button pulse through repeaters can “stretch” timing—for precise clocks use 1–2 tick monostables.\n\nCOMMON MISTAKES\nUsing a button where a lever is needed for memory; plates under your own door; ignoring strong/weak power when routing upstairs.\n\nGOING FURTHER\nAnalog sources (containers, lectern, daylight) output 0–15, not just on/off—see Comparator and other sections.\n\nREFERENCE TABLE (TYPICAL)\nRedstone block and lever/button at trigger: 15. Wood button is shorter than stone—mind timings. Minecart on a detector plate over rails outputs 15 while seated—station automation. Tripwire with hooks: 15 when taut, 0 when broken—traps and perimeter lines. In Creative, run equal-length dust from each source to one lamp and confirm all start at 15 (except analog sensors).",
+          "search": "lever button plate block source pulse steady",
+          "images": [
+            {
+              "path": "textures/tutorial/power_sources.png",
+              "caption": "Several power sources compared in one setup"
+            },
+            {
+              "path": "textures/tutorial/power_sources_button.png",
+              "caption": "Stone button as a short pulse source"
+            },
+            {
+              "path": "textures/tutorial/power_sources_plate.png",
+              "caption": "Pressure plate that turns on while pressed"
+            },
+            {
+              "path": "textures/tutorial/power_sources_block.png",
+              "caption": "Redstone block as a constant strength-15 source"
+            }
+          ]
+        },
+        {
+          "id": "horizontal_wire",
+          "title": "Horizontal routing",
+          "body": "LESSON GOAL\nRoute signals on a flat plane, turn corners, and pick dust, observer, or piston transport as appropriate.\n\nDUST ROUTING\nDust links to neighboring dust on the same level (and limited vertical links). Floor lines: up to 15 segments from a source, then a repeater. Dust on block tops is common along walls.\n\n90° turns: dust cannot step up 1 block alone. Fix: raise the line (block + dust on top), a repeater facing the turn, a side torch (mind inversion), or a comparator/repeater buffer.\n\nCrossing lines on one level connects them—isolate with a block, repeater, or torch on a block.\n\nOBSERVER TRANSPORT\nAn observer watches a block that will change (crops, piston-moved blocks). On update it outputs a 2-tick pulse from the back. Chains move “ticks” along farms without long dust. Downside: pulses, not levels—you may need memory or a repeater to hold state.\n\nPISTON TRANSPORT\nPistons slide carrier blocks (redstone blocks, powered blocks with dust)—compact but heavy, 12-block push limit, delays, and cost.\n\nPRACTICE\n1. Straight 10–15 dust lever → lamp.\n2. An “L” turn via block + top dust.\n3. Two isolated lines—only one lamp should light.\n\nMISTAKES\nFloating dust; missing the 1-block step; repeater facing the wrong way (input is the back of the arrow).\n\nGOING FURTHER\nLong survival buses: repeater every 15 dust; creative tests can use intermediate redstone blocks as 15-power anchors.\n\nOVERPASS WIRING\nLower dust powers a block; upper dust runs perpendicular—two lines cross without connecting. For 30 blocks: 15 dust—repeater—15 dust—end lamp; last segment must stay ≥1.",
+          "search": "horizontal dust corner routing wire",
+          "images": [
+            {
+              "path": "textures/tutorial/horizontal_wire.png",
+              "caption": "Horizontal dust line with a corner turn via a block"
+            }
+          ]
+        },
+        {
+          "id": "vertical_wire",
+          "title": "Vertical routing",
+          "body": "LESSON GOAL\nMove redstone up or down several blocks—a core skill for multi-floor bases and farms.\n\nTORCH TOWER\nBlock → side torch → block above → torch on another side. Each torch inverts and adds ~1 tick delay. Even torch count preserves phase; odd count inverts. Cheap and educational; slower and bulkier than repeaters.\n\nREPEATER / DUST STAIRCASE\n“Stair” dust and repeaters up a wall—no inversion, strength reset to 15 each repeater.\n\nOBSERVER + PISTON\nMoving a watched block fires observers—wave of pulses up a piston stack. Used in farms and hidden lifts.\n\nWATER TRICKS\nFlowing water can trigger block updates with observers—niche farm tech; know it exists after you master torches.\n\nPRACTICE\nLever on the ground, lamp 3 blocks higher. Build a torch tower or repeater ladder; confirm on/off matches expectation (torches invert). Toggle the lever—no stuck states.\n\nMISTAKES\nForgotten inversion; torch towers without understanding delay; trying to run dust straight up through air.\n\nRELATED\nCombine with horizontal routing and repeaters for full builds.\n\nEXTRA: PARALLEL COLUMNS\nFor 10+ blocks up, mix block+side torch steps with repeater steps to limit torch delay stack. Closed indoor bases still need torch/repeater towers—daylight sensors do not replace vertical wiring underground.",
+          "search": "vertical torch water observer tower floor",
+          "images": [
+            {
+              "path": "textures/tutorial/vertical_wire.png",
+              "caption": "Vertical signal transfer using a torch tower"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "repeater",
+      "title": "Redstone repeater",
+      "summary": "Boost to 15 and delay.",
+      "search": "повторитель",
+      "sources": "Sources: Minecraft Wiki — Redstone circuits (https://minecraft.wiki/w/Redstone_circuits), block mechanic pages; summarized by Redstone Master.",
+      "images": [
+        {
+          "path": "textures/tutorial/sections/repeater.png",
+          "caption": "Overview illustration for the Repeater section"
+        }
+      ],
+      "lessons": [
+        {
+          "id": "repeater_extend",
+          "title": "Extend with repeater",
+          "body": "LESSON GOAL\nExtend dust beyond 15 blocks, restore power to 15, and add controlled delay when needed.\n\nHOW REPEATERS WORK\nA repeater reads the back (opposite the arrow) and outputs 15 if input ≥1. Place one where strength would otherwise fall off. Delay: 1–4 ticks (right-click), ~0.05 s per tick (20 t/s).\n\nTHE 15-BLOCK RULE\nAt most 15 dust between repeaters. Pattern: source 15 → 15 dust → repeater → 15 dust → … → lamp.\n\nORIENTATION\nArrow points forward. Input from behind or powered block behind. Sides are not normal inputs (except lock mechanics).\n\nDELAY USES\n2–4 ticks between stages stretch pulses for shift registers, sorters, hopper sync. Too much delay breaks fast clocks.\n\nLOCKING\nStrong side power locks the repeater so output stops following input—memory building block in advanced designs.\n\nPRACTICE\nLever → exactly 15 dust → repeater → 15 dust → lamp. Break segments to see where power hits 0. Add a second repeater for 30+ blocks.\n\nMISTAKES\nRepeater facing the source; 16+ dust between repeaters; accidental side lock wiring.\n\nGOING FURTHER\nRepeaters act as one-way diodes—isolating feedback in counters.\n\nDELAY TABLE\n1 tick = 0.05 s; 4-tick repeater = 0.2 s. Four repeaters each at 4 ticks can stretch ~0.8 s between line pulses—slow farms. On Java Edition repeaters update neighbors when toggling—can bud adjacent pistons; isolate with blocks if needed. Two repeaters back-to-back without dust between sum their delays while keeping strength 15.",
+          "search": "repeater extend delay lock 15 dust boost",
+          "images": [
+            {
+              "path": "textures/tutorial/repeater_extend.png",
+              "caption": "Extending a dust line with a repeater"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "redstone_torch",
+      "title": "Redstone torch",
+      "summary": "Inversion and chains.",
+      "search": "факел",
+      "sources": "Sources: Minecraft Wiki — Redstone circuits (https://minecraft.wiki/w/Redstone_circuits), block mechanic pages; summarized by Redstone Master.",
+      "images": [
+        {
+          "path": "textures/tutorial/sections/redstone_torch.png",
+          "caption": "Overview illustration for the Redstone Torch section"
+        }
+      ],
+      "lessons": [
+        {
+          "id": "torch_invert",
+          "title": "Invert with torch",
+          "body": "LESSON GOAL\nBuild a NOT gate with a redstone torch and see the lamp on when the lever is off.\n\nTORCH LOGIC\nA torch on a solid block is lit (output 15) when that block is NOT strongly powered. Power the block → torch off → output 0. That is inversion.\n\nPRACTICE WIRING\nLever powers block A. Torch on side of block B. Dust from torch to lamp. Classic: lever → block → torch → dust → lamp. Lever OFF → block unpowered → torch ON → lamp ON.\n\nTIMING\nTorch toggle ~1 tick—mind burn-out risks in very fast loops in older guides; still avoid pointless tight oscillation.\n\nUSES\nInverted buttons, alarm “off when powered”, teaching NAND/RS paths later.\n\nMISTAKES\nTorch on air; weak power where strong is needed; wrong block powered.\n\nPRACTICE\nTruth table: lever on/off vs lamp. A second lever preview for RS memory later.\n\nEXTENDED NOT VARIANTS\nA: lever powers the torch block directly. B: lever dust into block, torch on side. C: lever on block, torch on block above. Sketch all three and mark strong vs weak power. For doors, NOT from a button pairs with memory for “open after release” behavior.\n\nLAMP ON BLOCK\nA lamp on a powered block glows from block power without dust—a NOT torch on a neighbor can unpower that block and turn the lamp off—another inversion style without dust to the lamp.",
+          "search": "invert not torch negation",
+          "images": [
+            {
+              "path": "textures/tutorial/torch_invert.png",
+              "caption": "Signal inversion with a redstone torch"
+            }
+          ]
+        },
+        {
+          "id": "torch_chain",
+          "title": "Torch chain",
+          "body": "LESSON GOAL\nSend signals through torch relays knowing inversion and stacked delay.\n\nRELAY CHAIN\nEach torch powers the next block and inverts. Even count = same polarity; odd = inverted. ~1 tick per torch. Five torches ≈ 5 ticks (0.25 s). Repeaters often beat long chains for distance without flipping logic.\n\nWHEN TO USE TORCHES\nTight shafts, hidden wiring, learning logic. Large buses use repeaters/comparators.\n\nPRACTICE\n3–5 steps up a wall; lever in, lamp out; compare delay to an equal repeater ladder.\n\nMISTAKES\nTorches fighting on one block; runaway flicker without a break repeater.\n\nGOING FURTHER\nTorch towers pair with the vertical routing lesson.\n\nDELAY NOTE\nFive torches ≈5 ticks; shorter input pulses may not reach the end—stretch input with a 2–4 tick repeater. Hopper transfers every 8 ticks—align torch count or add comparator delay for sync.",
+          "search": "torch chain relay delay",
+          "images": [
+            {
+              "path": "textures/tutorial/torch_chain.png",
+              "caption": "Torch chain for signal relay and delay"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "comparator",
+      "title": "Comparator",
+      "summary": "Compare, containers, subtract.",
+      "search": "компаратор",
+      "sources": "Sources: Minecraft Wiki — Redstone circuits (https://minecraft.wiki/w/Redstone_circuits), block mechanic pages; summarized by Redstone Master.",
+      "images": [
+        {
+          "path": "textures/tutorial/sections/comparator.png",
+          "caption": "Overview illustration for the Comparator section"
+        }
+      ],
+      "lessons": [
+        {
+          "id": "comparator_chest",
+          "title": "Chest signal strength",
+          "body": "LESSON GOAL\nRead container fill as analog 0–15 and use default compare mode.\n\nMEASURE MODE\nComparator rear faces the container (chest, barrel, hopper). Output strength depends on slot fill (formula uses item types/stacks). Empty ≈ 0; full chest ≈ 15. Mid values enable “almost full” sorters and refuel logic.\n\nCOMPARE MODE (default)\nOutput 15 if rear ≥ side; else 0. Example: furnace only when coal count exceeds ore threshold via side reference.\n\nSUBTRACT MODE\nRight-click toggles (front torch off)—see subtract lesson: max(0, rear − side).\n\nPRACTICE\nChest + comparator + dust → lamp. Add stacks—strength changes. Compare rear to side power 8—adjust threshold.\n\nMISTAKES\nComparator facing wrong way; expecting double-chest read without proper attachment; mixing modes.\n\nGOING FURTHER\nHopper fill scales differ—experiment for precise sorter thresholds.\n\nFILL FORMULA (SIMPLIFIED)\nThe game weighs item types and stacks, not slot count alone. One diamond stack already raises output noticeably. Test 1, 8, 16, 32, 64 items and log comparator strength. Lamp through compare≥8 = “half full” indicator. Barrels and shulker boxes follow the same rear-face read rule. Double chests: a comparator on one half only reads that half’s 27 slots—use two comparators or hopper merge for total fill.",
+          "search": "chest strength fill comparator container",
+          "images": [
+            {
+              "path": "textures/tutorial/comparator_chest.png",
+              "caption": "Comparator reading chest fill level"
+            }
+          ]
+        },
+        {
+          "id": "comparator_subtract",
+          "title": "Subtract mode",
+          "body": "LESSON GOAL\nUse subtract mode for feedback loops, memory, and counters.\n\nFORMULA\nSubtract (front small torch off): output = max(0, rear − side). No negative power—floor at 0.\n\nCLOSED LOOP\nOutput feeds back to the side through delayed repeaters—basis of memory cells when combined with torches/repeaters.\n\nPRACTICE (SIMPLE)\nSubtract comparator: rear from lever, side from its own output through 2-tick repeaters. Add a reset button. Watch a short input “write” state.\n\nDELAY REQUIRED\nWithout 1–2 ticks between output and side, the circuit may oscillate.\n\nMISTAKES\nWrong mode; zero delay; subtract without a side signal.\n\nGOING FURTHER\nItem counters with hopper + subtract + hopper clock.\n\nNUMBER EXAMPLE\nRear 12, side 5 → output 7. Rear 5, side 9 → 0. Memory write: side pulled to 15 → output dies; side 0 with rear 15 → cell holds. Tie to hopper clock lesson. Practice subtract with two levers (rear/side) before building RAM from tutorials.",
+          "search": "subtract closed loop memory counter",
+          "images": [
+            {
+              "path": "textures/tutorial/comparator_subtract.png",
+              "caption": "Comparator in subtraction mode"
+            }
+          ]
+        },
+        {
+          "id": "comparator_lectern",
+          "title": "Lectern pages",
+          "body": "LESSON GOAL\nRead lectern book page as 0–15 power and use pages as addresses.\n\nMECHANICS\nRear faces the lectern. Strength follows current page (up to 15 on a full book). Players flipping pages change output live—codes, channel select, puzzle doors.\n\nPRACTICE\nLectern + book + comparator → lamps through compare thresholds (3, 7, 11) or one lamp only on the “correct” page.\n\nUSES\nTeaching analog redstone, adventure maps, rare survival locks.\n\nMISTAKES\nNo book → 0; wrong facing; expecting level 16 (max 15).\n\nGOING FURTHER\nCombine chest analog with subtract for threshold math.\n\nBOOK PAGES LAB\nWrite 16 pages, log strength on pages 1/5/10/15. Four lamps with compare thresholds 4/8/12/15—a simple address panel demo.",
+          "search": "lectern book page signal address",
+          "images": [
+            {
+              "path": "textures/tutorial/comparator_lectern.png",
+              "caption": "Comparator next to a lectern with a book"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "piston",
+      "title": "Piston",
+      "summary": "Push and sticky pull.",
+      "search": "поршень",
+      "sources": "Sources: Minecraft Wiki — Redstone circuits (https://minecraft.wiki/w/Redstone_circuits), block mechanic pages; summarized by Redstone Master.",
+      "images": [
+        {
+          "path": "textures/tutorial/sections/piston.png",
+          "caption": "Overview illustration for the Piston section"
+        }
+      ],
+      "lessons": [
+        {
+          "id": "piston_push",
+          "title": "Push with piston",
+          "body": "LESSON GOAL\nPush blocks with a normal piston, respect the 12-block limit, and know immovable blocks.\n\nEXTENSION\nOn power, the piston head extends 1 block and pushes up to 12 connected movable blocks. Timing: roughly 2 ticks per extend/retract cycle in typical setups.\n\nCANNOT PUSH (EXAMPLES)\nBedrock, command blocks (survival), respawn anchor, open furnace GUI, some special states, obsidian, many technical blocks. Slime/honey carry groups—advanced.\n\nPRACTICE\nPiston + button + stone block in front. Watch motion. Stack 13 blocks—13th should not move. Lamp on button dust for sync.\n\nQUASI-CONNECTIVITY (BRIEF)\nPistons can activate from powering blocks below/side—hidden doors; know it exists beyond basic push.\n\nMISTAKES\nPushing into air with nothing to move; expecting bedrock motion; confusing sticky vs normal.\n\nGOING FURTHER\n0-tick and double-piston farms are advanced; not required here.\n\nPUSH LIST\nSand/gravel push; 12-block row test—13th stays. Closed chest pushes; open GUI does not. Verify in your version for modded blocks.",
+          "search": "push piston 12 blocks quasi connectivity",
+          "images": [
+            {
+              "path": "textures/tutorial/piston_push.png",
+              "caption": "Regular piston pushing a block forward"
+            }
+          ]
+        },
+        {
+          "id": "piston_sticky",
+          "title": "Sticky pull",
+          "body": "LESSON GOAL\nPull the first moved block back with a sticky piston when power turns off.\n\nVS NORMAL\nSticky retracts and pulls the last pushed movable block if nothing blocks it. Normal pistons leave blocks behind.\n\nUSES\nHidden doors, sliding floors, bridges, block sorters, observer farms (Observer section).\n\nPRACTICE\nSticky piston + button + block. On → extend; off → retract with block. Two-block chain—only the adjacent movable rules apply.\n\nLIMITS\nAir gap after push—nothing to pull. Huge 12-block trains may not fully retract. Stable off signal required.\n\nMISTAKES\nSticky where only push is needed; immovable blocks; two pistons fighting one block.\n\nGOING FURTHER\nSlime/honey block clusters move platforms as one.",
+          "search": "sticky pull retract door bridge",
+          "images": [
+            {
+              "path": "textures/tutorial/piston_sticky.png",
+              "caption": "Sticky piston pulling a block back"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "observer",
+      "title": "Observer",
+      "summary": "Block update detector.",
+      "search": "наблюдатель",
+      "sources": "Sources: Minecraft Wiki — Redstone circuits (https://minecraft.wiki/w/Redstone_circuits), block mechanic pages; summarized by Redstone Master.",
+      "images": [
+        {
+          "path": "textures/tutorial/sections/observer.png",
+          "caption": "Overview illustration for the Observer section"
+        }
+      ],
+      "lessons": [
+        {
+          "id": "observer_detect",
+          "title": "Observer detect",
+          "body": "LESSON GOAL\nDetect block updates on the observer face and output a 2-tick rear pulse.\n\nLAYOUT\nFace watches the target block. Rear outputs power 15 for 2 ticks on block update (growth, piston move, state change, some inventory updates).\n\nDETECTS\nCrop growth, piston slides, many block state changes—not a full analog level sensor, just “something changed.”\n\nPRACTICE\nObserver watching sand/crop; dust → lamp. Break block—pulse. Chain three observers—pulse travels.\n\nFARMS\nBamboo/sugar cane/cactus → piston/dispenser; often need a repeater or T-flip-flop to hold.\n\nMISTAKES\nFace to air; expecting steady power; spam updates without delay.\n\nGOING FURTHER\nObservers on containers react to item changes—sorters.",
+          "search": "observer detect pulse block update",
+          "images": [
+            {
+              "path": "textures/tutorial/observer_detect.png",
+              "caption": "Observer reacting to a neighboring block update"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "minecart",
+      "title": "Minecart",
+      "summary": "Rails and cart types.",
+      "search": "вагонетка рельсы",
+      "sources": "Sources: Minecraft Wiki — Redstone circuits (https://minecraft.wiki/w/Redstone_circuits), block mechanic pages; summarized by Redstone Master.",
+      "images": [
+        {
+          "path": "textures/tutorial/sections/minecart.png",
+          "caption": "Overview illustration for the Minecart section"
+        }
+      ],
+      "lessons": [
+        {
+          "id": "minecart_start",
+          "title": "Launch minecart",
+          "body": "LESSON GOAL\nStart a minecart on rails manually and with redstone.\n\nRAILS\nNormal rails—gravity on slopes, slowdown on flat. Powered rails boost while powered. Activator rails give a kick and special activation (hopper carts wake up). Detector rails pulse when passed.\n\nSTART\nPlace rails, place cart, push by hand or power activator/powered rail under the cart.\n\nPRACTICE\n10-block track + hand push; then button → activator rail at start; add powered sections for hills.\n\nMISTAKES\nCart off-rail; no boost on long flat spans; wrong rail type.\n\nGOING FURTHER\nStations and switches—wiki Rails article.",
+          "search": "launch rails minecart push",
+          "images": [
+            {
+              "path": "textures/tutorial/minecart_start.png",
+              "caption": "Launching a minecart from rails and a power source"
+            }
+          ]
+        },
+        {
+          "id": "minecart_hopper",
+          "title": "Hopper minecart farm",
+          "body": "LESSON GOAL\nBuild a simple item collection loop with a hopper minecart under tracks.\n\nMECHANICS\nHopper carts pick items from below and from containers under track when active. Activator rails wake locked hopper carts to transfer into stationary hoppers.\n\nFARM SKETCH\nDrop zone under rail; cart loop collects and unloads at a station (activator + hopper → chest).\n\nPRACTICE\nRail over hopper → chest. Drop items; run cart; check chest fill.\n\nMISTAKES\nNo station stop; hopper locked by redstone below; missing activator at unload.\n\nGOING FURTHER\nPair with activator rail and Hopper lessons.",
+          "search": "hopper minecart farm collect items",
+          "images": [
+            {
+              "path": "textures/tutorial/minecart_hopper.png",
+              "caption": "Minecart with hopper collecting items"
+            }
+          ]
+        },
+        {
+          "id": "minecart_activator",
+          "title": "Activator rail",
+          "body": "LESSON GOAL\nPower activator rails to boost carts and activate special cart types.\n\nBEHAVIOR\nPowered activator rail under a cart gives a speed pulse and briefly activates hopper/TNT carts per version rules.\n\nPRACTICE\nButton → dust → activator under stopped cart—cart moves. Hopper cart locked until activator pulse transfers items.\n\nVS POWERED RAILS\nPowered rails sustain speed while on; activators give kicks. Combine on long routes.\n\nMISTAKES\nNo power to rail; cart not centered; wrong rail block.\n\nGOING FURTHER\nDetector rails for automatic station pulses.",
+          "search": "activator rail boost pulse",
+          "images": [
+            {
+              "path": "textures/tutorial/minecart_activator.png",
+              "caption": "Activator rails boosting a minecart"
+            }
+          ]
+        },
+        {
+          "id": "minecart_furnace",
+          "title": "Furnace minecart",
+          "body": "LESSON GOAL\nRide a furnace minecart with fuel on rails.\n\nUSE\nPut coal/wood as fuel, sit, drive forward on rails. Consumes fuel over time; not a boat replacement off-rail.\n\nPRACTICE\nTrack + coal in cart + ride. Add powered rails on climbs.\n\nNOTES\nCheck your Minecraft version—cart physics differ from old guides. Automation often prefers powered rails over furnace carts.\n\nMISTAKES\nNo fuel; steep hill without powered rails; expecting boat controls off-rail.\n\nGOING FURTHER\nMulti-cart trains—experiment for projects.",
+          "search": "furnace minecart coal ride",
+          "images": [
+            {
+              "path": "textures/tutorial/minecart_furnace.png",
+              "caption": "Powered minecart with a furnace"
+            }
+          ]
+        },
+        {
+          "id": "minecart_stack",
+          "title": "20-cart train",
+          "body": "LESSON GOAL\nUnderstand many carts on one rail—trains, collisions, pushing.\n\nMECHANICS\nCarts push each other into trains. Hooks (if available) or tight packing. Rear collisions transfer momentum.\n\nPRACTICE\nStack many carts on one line (as the lesson title suggests). Push from behind or use activator rail—watch speed loss and bounce at stops.\n\nUSES\nFun tests, lag checks, basis for detector-rail stations.\n\nMISTAKES\nExpecting infinite speed without powered rails; derailing on bad turns.\n\nGOING FURTHER\nPer-cart unloading stations—advanced logistics.",
+          "search": "train stack collision carts",
+          "images": [
+            {
+              "path": "textures/tutorial/minecart_stack.png",
+              "caption": "Multiple minecarts linked on one track"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hopper",
+      "title": "Hopper",
+      "summary": "Item transport and timers.",
+      "search": "воронка",
+      "sources": "Sources: Minecraft Wiki — Redstone circuits (https://minecraft.wiki/w/Redstone_circuits), block mechanic pages; summarized by Redstone Master.",
+      "images": [
+        {
+          "path": "textures/tutorial/sections/hopper.png",
+          "caption": "Overview illustration for the Hopper section"
+        }
+      ],
+      "lessons": [
+        {
+          "id": "hopper_insert",
+          "title": "Insert into hopper",
+          "body": "LESSON GOAL\nMove items through hoppers into containers and lock hoppers with redstone.\n\nFLOW\nHoppers pull from above inventories/drops and push down/sideways. Typical rate ~1 stack per 8 ticks (0.4 s)—slow but reliable.\n\nLOCK\nPower 15 below (or powered block below) stops pull and push—farm stops, single-item timing, comparator sync.\n\nPRACTICE\nHopper on chest, drop item—lands in chest. Power below with lever—flow stops while on.\n\nMISTAKES\nWrong facing; double chest half mismatch; expecting instant transfer.\n\nGOING FURTHER\nSide chains for item sorters.",
+          "search": "hopper insert lock chest redstone",
+          "images": [
+            {
+              "path": "textures/tutorial/hopper_insert.png",
+              "caption": "Inserting items into a hopper from above"
+            }
+          ]
+        },
+        {
+          "id": "hopper_timer",
+          "title": "Hopper timer",
+          "body": "LESSON GOAL\nBuild a hopper clock—timer using hoppers and a comparator.\n\nIDEA\nTwo hoppers (or hopper+chest) cycle an item; comparator reads partial fill and pulses. Period depends on item count and repeater delays.\n\nPRACTICE\nMinimal two-hopper loop + comparator → lamp. Tune item count for different periods.\n\nUSES\nSlow furnaces, farms, cheap clocks without many repeaters.\n\nMISTAKES\nWrong comparator mode; hopper always locked; no item to cycle.\n\nGOING FURTHER\nCompare to repeater clocks and daylight sensors.",
+          "search": "hopper timer clock comparator",
+          "images": [
+            {
+              "path": "textures/tutorial/hopper_timer.png",
+              "caption": "Hopper-based timer with transfer delay"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "daylight_detector",
+      "title": "Daylight detector",
+      "summary": "Sky light sensor.",
+      "search": "датчик света",
+      "sources": "Sources: Minecraft Wiki — Redstone circuits (https://minecraft.wiki/w/Redstone_circuits), block mechanic pages; summarized by Redstone Master.",
+      "images": [
+        {
+          "path": "textures/tutorial/sections/daylight_detector.png",
+          "caption": "Overview illustration for the Daylight Detector section"
+        }
+      ],
+      "lessons": [
+        {
+          "id": "daylight_wait",
+          "title": "Daylight sensor",
+          "body": "LESSON GOAL\nRead sky light with a daylight detector and toggle day/night mode.\n\nREQUIREMENTS\nClear view of the sky above the detector. Output 0–15 by time/weather—noon highest, night lower.\n\nINVERT\nRight-click toggles inverted mode—handy for “lamps on at night” without a torch NOT.\n\nPRACTICE\nRoof detector → dust → lamp. Wait for sunset—output changes. Toggle invert—behavior swaps.\n\nUSES\nStreet lights, night doors, mob farm timing.\n\nMISTAKES\nUnder solid roof; expecting exact clock without comparator thresholds.\n\nGOING FURTHER\nCompare mode threshold for “only noon.”",
+          "search": "daylight sensor sky invert",
+          "images": [
+            {
+              "path": "textures/tutorial/daylight_wait.png",
+              "caption": "Waiting for a light level change with a daylight detector"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "target",
+      "title": "Target block",
+      "summary": "Projectile hits.",
+      "search": "мишень",
+      "sources": "Sources: Minecraft Wiki — Redstone circuits (https://minecraft.wiki/w/Redstone_circuits), block mechanic pages; summarized by Redstone Master.",
+      "images": [
+        {
+          "path": "textures/tutorial/sections/target.png",
+          "caption": "Overview illustration for the Target section"
+        }
+      ],
+      "lessons": [
+        {
+          "id": "target_hit",
+          "title": "Shoot target",
+          "body": "LESSON GOAL\nTrigger a target block with projectiles and see strength vs accuracy.\n\nMECHANICS\nHits from arrows/snowballs/tridents (per version) output power; center hits stronger (up to 15). Good for ranges, minigames, comparator scoring.\n\nPRACTICE\nTarget → dust → lamp. Shoot at varying distance and draw strength—use comparators for thresholds.\n\nMISTAKES\nMelee does not work; expecting hold without repeat hits; blocked faces.\n\nGOING FURTHER\nMultiple targets for “hit all” door puzzles.",
+          "search": "target shoot bow crossbow strength",
+          "images": [
+            {
+              "path": "textures/tutorial/target_hit.png",
+              "caption": "Target block output when hit by an arrow"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sculk_sensor",
+      "title": "Sculk sensor",
+      "summary": "Vibration detection.",
+      "search": "скалк",
+      "sources": "Sources: Minecraft Wiki — Redstone circuits (https://minecraft.wiki/w/Redstone_circuits), block mechanic pages; summarized by Redstone Master.",
+      "images": [
+        {
+          "path": "textures/tutorial/sections/sculk_sensor.png",
+          "caption": "Overview illustration for the Sculk Sensor section"
+        }
+      ],
+      "lessons": [
+        {
+          "id": "sculk_sound",
+          "title": "Sculk vibration",
+          "body": "LESSON GOAL\nTrigger a sculk sensor with vibrations—steps, blocks, shots—and get a redstone pulse.\n\nMECHANICS (1.19+)\nSensors listen in radius; different actions have vibration frequencies. Pulse output; sculk may spread unless wool/carpet blocks spread. Wool also isolates sensors.\n\nPRACTICE\nSensor → dust → lamp. Jump nearby—pulse. Place block—pulse. Wool perimeter to limit sculk growth.\n\nSAFETY\nAvoid summoning the Warden in Deep Dark; practice in safer biomes.\n\nMISTAKES\nNoise chaos; no wool—sculk spreads everywhere.\n\nGOING FURTHER\nCalibrated sensor—next lesson.",
+          "search": "sculk vibration sound wool",
+          "images": [
+            {
+              "path": "textures/tutorial/sculk_sound.png",
+              "caption": "Sculk sensor reacting to sound and vibrations"
+            }
+          ]
+        },
+        {
+          "id": "sculk_armor",
+          "title": "Calibrated sculk",
+          "body": "LESSON GOAL\nConfigure a calibrated sculk sensor to filter vibration types—example: armor unequip.\n\nCALIBRATION\nCalibrated sensors take a tuning signal and listen for one frequency class (steps, blocks, projectiles, equip changes—see wiki table).\n\nPRACTICE\nSet filter per wiki/in-game tuning. Remove armor near sensor—lamp on; jump may not trigger if filtered out.\n\nUSES\nHidden bases, traps, event-only entrances without mob false triggers.\n\nMISTAKES\nWrong frequency; unfiltered sensor hears everything; no wool isolation.\n\nGOING FURTHER\nSensor chains as event buses—advanced.",
+          "search": "calibrated sculk armor filter vibration",
+          "images": [
+            {
+              "path": "textures/tutorial/sculk_armor.png",
+              "caption": "Armor with Swift Sneak for moving near sculk"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dropper_dispenser",
+      "title": "Dropper and dispenser",
+      "summary": "Drop vs use items.",
+      "search": "выбрасыватель раздатчик",
+      "sources": "Sources: Minecraft Wiki — Redstone circuits (https://minecraft.wiki/w/Redstone_circuits), block mechanic pages; summarized by Redstone Master.",
+      "images": [
+        {
+          "path": "textures/tutorial/sections/dropper_dispenser.png",
+          "caption": "Overview of the Dropper and Dispenser section"
+        }
+      ],
+      "lessons": [
+        {
+          "id": "dropper_drop",
+          "title": "Drop item",
+          "body": "LESSON GOAL\nEject items with a dropper on a pulse into containers or the world.\n\nVS DISPENSER\nDroppers only drop items. Dispensers “use” many items (buckets, TNT, spawn eggs). Do not swap them in farms.\n\nPOWER\n1-tick pulse = one eject. Hold power—repeats every 8 ticks while items remain.\n\nPRACTICE\nDropper facing hopper/chest; item inside; button—item transfers. Face down—drops to ground.\n\nMISTAKES\nFull container overflows; level power without repeated ejects; using dispenser for pure transport.\n\nGOING FURTHER\nDropper elevators—item vertical transport.",
+          "search": "dropper eject container",
+          "images": [
+            {
+              "path": "textures/tutorial/dropper_drop.png",
+              "caption": "Dropper ejecting items when powered"
+            }
+          ]
+        },
+        {
+          "id": "dispenser_activate",
+          "title": "Dispense item",
+          "body": "LESSON GOAL\nDispense items that have special use: water/lava buckets, arrows, eggs, TNT, armor on stands, etc.\n\nMECHANICS\nDispenser tries to use the item toward its facing: place fluids, ignite TNT, shoot arrows, equip armor per rules.\n\nPRACTICE\nDispenser + button. Water bucket at a source block. TNT only in safe areas. Compare dropper on same item.\n\nDANGER\nFire, explosions, flooding—test far from spawn.\n\nMISTAKES\nExpecting crafting (use Crafter); wrong item; hopper blocking slot.\n\nGOING FURTHER\nWater dispensers for harvest farms—classic.",
+          "search": "dispenser bucket tnt arrow use",
+          "images": [
+            {
+              "path": "textures/tutorial/dispenser_activate.png",
+              "caption": "Dispenser activated by a redstone signal"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "crafter",
+      "title": "Crafter",
+      "summary": "Automated crafting.",
+      "search": "автокрафтер",
+      "sources": "Sources: Minecraft Wiki — Redstone circuits (https://minecraft.wiki/w/Redstone_circuits), block mechanic pages; summarized by Redstone Master.",
+      "images": [
+        {
+          "path": "textures/tutorial/sections/crafter.png",
+          "caption": "Overview illustration for the Crafter section"
+        }
+      ],
+      "lessons": [
+        {
+          "id": "crafter_gold",
+          "title": "Craft gold ingot",
+          "body": "LESSON GOAL\nSet up a Crafter for gold ingots with slot locks and hopper feed.\n\nRECIPE GRID\n8 gold nuggets around empty center (verify recipe in your version). Right-click lock slots that must stay empty so hoppers cannot fill wrong cells.\n\nFEEDING\nHoppers insert only into allowed slots. Redstone pulse (button/clock) = one craft per pulse.\n\nPRACTICE\n1) Configure grid locks. 2) Hopper feed nuggets. 3) Pulse—ingot to output. 4) Output hopper → chest.\n\nMISTAKES\nAll slots unlocked—messy fills; no pulse; locks mismatch recipe.\n\nGOING FURTHER\nFiltered hoppers for gold-only supply.",
+          "search": "gold ingot crafter slot lock",
+          "images": [
+            {
+              "path": "textures/tutorial/crafter_gold.png",
+              "caption": "Crafter assembling items from gold ingots"
+            }
+          ]
+        },
+        {
+          "id": "crafter_cake",
+          "title": "Craft cake",
+          "body": "LESSON GOAL\nAutomate cake in a Crafter—multiple ingredient types and slot discipline.\n\nRECIPE\nCake uses milk, sugar, egg, wheat in specific 3×3 cells—memorize positions. Lock every cell so only the correct ingredient can enter.\n\nLOGISTICS\nSeveral filtered hoppers or timed phases so ingredients do not mix. Often load, then one pulse.\n\nPRACTICE\nManual correct layout + locks + single pulse = cake. Replace one ingredient at a time with hopper feed.\n\nMISTAKES\nEgg in milk slot; milk bucket supply confusion; infinite loop without reset.\n\nGOING FURTHER\nMulti-crafter food storage—endgame base project; see wiki Crafter.",
+          "search": "cake craft ingredients hopper",
+          "images": [
+            {
+              "path": "textures/tutorial/crafter_cake.png",
+              "caption": "Crafter crafting a cake from a set pattern"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
