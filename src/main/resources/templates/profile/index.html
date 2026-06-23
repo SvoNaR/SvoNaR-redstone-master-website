@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head}"></head>
+<body>
+<div th:replace="~{fragments/layout :: header}"></div>
+
+<main class="page">
+	<h1 th:text="${locale.code == 'en' ? 'Profile' : 'Профиль'}">Профиль</h1>
+
+	<div class="alert alert--success" th:if="${avatarSuccess}">
+		<span th:text="${locale.code == 'en' ? 'Avatar updated.' : 'Аватарка обновлена.'}"></span>
+	</div>
+
+	<section class="profile-card profile-intro card--actions" th:if="${showProfileIntro}">
+		<h2 th:text="${locale.code == 'en' ? 'Welcome!' : 'Добро пожаловать!'}">Добро пожаловать!</h2>
+		<p th:text="${locale.code == 'en'
+			? 'You can change your profile avatar anytime. Upload a Minecraft skin (64×64) and we will crop the face, or upload a ready-made 8×8 avatar.'
+			: 'Вы можете сменить аватарку профиля в любой момент: загрузите скин Minecraft 64×64 — мы вырежем лицо, или сразу готовую аватарку 8×8.'}"></p>
+		<div class="card-actions">
+			<a class="btn btn--primary" th:href="@{/profile/avatar(lang=${locale.code})}"
+			   th:text="${locale.code == 'en' ? 'Change avatar' : 'Сменить аватарку'}"></a>
+			<form th:action="@{/profile/intro-seen}" method="post" class="inline-form">
+				<input type="hidden" name="lang" th:value="${locale.code}"/>
+				<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+				<button type="submit" class="btn btn--secondary"
+						th:text="${locale.code == 'en' ? 'Got it' : 'Понятно'}"></button>
+			</form>
+		</div>
+	</section>
+	<div class="profile-layout">
+		<aside class="profile-sidebar">
+			<div class="profile-avatar-glow">
+				<img class="profile-avatar profile-avatar--image"
+					 th:src="${profileUser.avatarUrl()}" th:alt="${profileUser.username()}" width="88" height="88"/>
+			</div>
+			<p class="profile-username" th:text="${profileUser.username()}">user</p>
+			<p class="profile-role status-badge" th:text="${profileUser.role().name()}">USER</p>
+			<a class="btn btn--small btn--secondary profile-avatar-change"
+			   th:href="@{/profile/avatar(lang=${locale.code})}"
+			   th:text="${locale.code == 'en' ? 'Change avatar' : 'Сменить аватарку'}"></a>
+		</aside>
+
+		<section class="profile-card profile-details">
+			<h2 th:text="${locale.code == 'en' ? 'Account' : 'Аккаунт'}">Аккаунт</h2>
+			<dl class="profile-dl">
+				<dt th:text="${locale.code == 'en' ? 'Email' : 'Почта'}">Почта</dt>
+				<dd>
+					<span th:text="${profileUser.email()}"></span>
+				</dd>
+				<dt th:text="${locale.code == 'en' ? 'Role' : 'Роль'}">Роль</dt>
+				<dd th:text="${locale.code == 'en'
+					? (profileUser.role().name() == 'USER' ? 'User' : (profileUser.role().name() == 'MODERATOR' ? 'Moderator' : 'Administrator'))
+					: (profileUser.role().name() == 'USER' ? 'Пользователь' : (profileUser.role().name() == 'MODERATOR' ? 'Модератор' : 'Администратор'))}"></dd>
+				<dt th:text="${locale.code == 'en' ? 'Registered' : 'Зарегистрирован'}">Зарегистрирован</dt>
+				<dd th:text="${#temporals.format(profileUser.createdAt(), 'dd.MM.yyyy HH:mm')}"></dd>
+			</dl>
+
+			<div class="profile-account-footer">
+				<div class="profile-account-actions">
+					<a class="btn btn--secondary" th:href="@{/profile/change-email(lang=${locale.code})}"
+					   th:text="${locale.code == 'en' ? 'Change email' : 'Сменить почту'}"></a>
+				</div>
+				<form th:action="@{/profile/logout}" method="post" class="profile-logout"
+					  th:attr="data-confirm-message=${locale.code == 'en' ? 'Are you sure you want to sign out?' : 'Вы действительно хотите выйти?'}">
+					<input type="hidden" name="lang" th:value="${locale.code}"/>
+					<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+					<button type="submit" class="btn btn--secondary"
+							th:text="${locale.code == 'en' ? 'Sign out' : 'Выйти'}">Выйти</button>
+				</form>
+			</div>
+		</section>
+
+		<section class="profile-card profile-progress" th:if="${tutorialProgress != null}">
+			<h2 th:text="${locale.code == 'en' ? 'Tutorial progress (mod)' : 'Прогресс обучения (мод)'}">Прогресс обучения (мод)</h2>
+			<p class="profile-progress__summary">
+				<span th:text="${locale.code == 'en' ? 'Lessons completed' : 'Пройдено уроков'}">Пройдено уроков</span>:
+				<strong th:text="${tutorialProgress.completedLessons() + ' / ' + tutorialProgress.totalLessons()}">0 / 0</strong>
+			</p>
+			<p class="profile-progress__hint"
+			   th:text="${locale.code == 'en'
+					? 'Progress is synced when you sign in through the mod and when you exit Minecraft.'
+					: 'Прогресс синхронизируется при входе через мод и при выходе из Minecraft.'}"></p>
+		</section>
+	</div>
+</main>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+</body>
+</html>

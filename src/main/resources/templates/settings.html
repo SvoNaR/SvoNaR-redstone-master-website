@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head}"></head>
+<body>
+<div th:replace="~{fragments/layout :: header}"></div>
+
+<main class="page">
+	<h1 th:text="${locale.code == 'en' ? 'Settings' : 'Настройки'}">Настройки</h1>
+	<p class="note" th:utext="${@textLinkService.toHtml(disclaimer, locale.code)}"></p>
+
+	<section class="section-block">
+		<h2 th:text="${locale.code == 'en' ? 'Mod settings' : 'Настройки мода'}">Настройки мода</h2>
+		<table class="data-table data-table--wide">
+			<thead>
+			<tr>
+				<th th:text="${locale.code == 'en' ? 'Section' : 'Раздел'}">Раздел</th>
+				<th th:text="${locale.code == 'en' ? 'Setting' : 'Настройка'}">Настройка</th>
+				<th class="data-table-col-default" th:text="${locale.code == 'en' ? 'Default' : 'По умолчанию'}">По умолчанию</th>
+				<th th:text="${locale.code == 'en' ? 'Description' : 'Описание'}">Описание</th>
+			</tr>
+			</thead>
+			<tbody>
+			<tr th:each="setting : ${settings}">
+				<td th:text="${setting.section()}"></td>
+				<td th:text="${setting.name()}"></td>
+				<td class="data-table-col-default"><code th:text="${setting.defaultValue()}"></code></td>
+				<td th:utext="${@textLinkService.toHtml(setting.tooltip(), locale.code)}"></td>
+			</tr>
+			</tbody>
+		</table>
+	</section>
+
+	<section class="section-block">
+		<h2 th:text="${locale.code == 'en' ? 'Notes' : 'Подсказки'}">Подсказки</h2>
+		<article class="about-card" th:each="note : ${referenceNotes}">
+			<h3 th:text="${note.title()}">Заголовок</h3>
+			<p th:text="${note.body()}">Текст</p>
+		</article>
+	</section>
+
+	<section class="section-block">
+		<h2 th:text="${locale.code == 'en' ? 'Key bindings' : 'Управление'}">Управление</h2>
+		<table class="data-table data-table--wide">
+			<thead>
+			<tr>
+				<th th:text="${locale.code == 'en' ? 'Action' : 'Действие'}">Действие</th>
+				<th th:text="${locale.code == 'en' ? 'Key' : 'Клавиша'}">Клавиша</th>
+			</tr>
+			</thead>
+			<tbody>
+			<tr th:each="binding : ${keyBindings}">
+				<td th:text="${binding.action()}"></td>
+				<td><code th:text="${binding.key()}"></code></td>
+			</tr>
+			</tbody>
+		</table>
+	</section>
+</main>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+</body>
+</html>

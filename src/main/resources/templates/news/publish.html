@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head}"></head>
+<body>
+<div th:replace="~{fragments/layout :: header}"></div>
+
+<main class="page page--narrow">
+	<h1 th:text="${locale.code == 'en' ? 'Publish news' : 'Публикация новости'}">Публикация новости</h1>
+
+	<section class="profile-card">
+		<form class="auth-form" th:action="@{/news/publish}" th:object="${publishNewsForm}" method="post" accept-charset="UTF-8">
+			<input type="hidden" name="lang" th:value="${locale.code}"/>
+			<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+			<label>
+				<span th:text="${locale.code == 'en' ? 'Title (RU)' : 'Заголовок (RU)'}"></span>
+				<input type="text" th:field="*{titleRu}"/>
+				<span class="field-error" th:if="${#fields.hasErrors('titleRu')}" th:errors="*{titleRu}"></span>
+			</label>
+			<label>
+				<span th:text="${locale.code == 'en' ? 'Title (EN)' : 'Заголовок (EN)'}"></span>
+				<input type="text" th:field="*{titleEn}"/>
+				<span class="field-error" th:if="${#fields.hasErrors('titleEn')}" th:errors="*{titleEn}"></span>
+			</label>
+			<label>
+				<span th:text="${locale.code == 'en' ? 'Text (RU)' : 'Текст (RU)'}"></span>
+				<textarea th:field="*{bodyRu}" rows="6"></textarea>
+				<span class="field-error" th:if="${#fields.hasErrors('bodyRu')}" th:errors="*{bodyRu}"></span>
+			</label>
+			<label>
+				<span th:text="${locale.code == 'en' ? 'Text (EN)' : 'Текст (EN)'}"></span>
+				<textarea th:field="*{bodyEn}" rows="6"></textarea>
+				<span class="field-error" th:if="${#fields.hasErrors('bodyEn')}" th:errors="*{bodyEn}"></span>
+			</label>
+
+			<div class="form-actions-right">
+				<a class="btn btn--secondary" th:href="@{/news(lang=${locale.code})}"
+				   th:text="${locale.code == 'en' ? 'Cancel' : 'Отмена'}"></a>
+				<button type="submit" class="btn btn--primary"
+						th:text="${locale.code == 'en' ? 'Publish' : 'Опубликовать'}"></button>
+			</div>
+		</form>
+	</section>
+</main>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+</body>
+</html>

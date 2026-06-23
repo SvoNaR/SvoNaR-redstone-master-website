@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head}"></head>
+<body>
+<div th:replace="~{fragments/layout :: header}"></div>
+
+<main class="page">
+	<h1 th:text="${pageTitle}">Создать псевдо-видео</h1>
+
+	<div th:replace="~{fragments/moderation :: nav}"></div>
+
+	<div class="alert alert--success" th:if="${successMessage}" th:text="${successMessage}"></div>
+	<div class="alert alert--error" th:if="${errorMessage}" th:text="${errorMessage}"></div>
+
+	<section class="profile-card" th:if="${submission == null}">
+		<h2 th:text="${locale.code == 'en' ? 'New pseudo-video' : 'Новое псевдо-видео'}">Новое псевдо-видео</h2>
+		<p class="muted" th:text="${locale.code == 'en'
+			? 'Upload a regular video file — the server converts it to PNG frames for the mod player (15 fps, 480p by default).'
+			: 'Загрузите обычное видео — сервер конвертирует его в кадры PNG для плеера мода (по умолчанию 15 fps, 480p).'}"></p>
+		<form class="moderation-form" method="post" th:action="@{/moderation/pseudo-video(lang=${locale.code})}">
+			<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+			<label>
+				<span th:text="${locale.code == 'en' ? 'Video id (folder name in mod)' : 'ID псевдо-видео (имя папки в моде)'}">ID</span>
+				<input name="videoId" required pattern="[a-zA-Z0-9._-]+" placeholder="carry_signal_demo"/>
+				<span class="field-hint" th:text="${locale.code == 'en'
+					? 'Use only letters, digits, dot, underscore, hyphen. Referenced in lesson JSON as videos: [id].'
+					: 'Только латиница, цифры, точка, подчёркивание, дефис. В JSON урока: videos: [id].'}"></span>
+			</label>
+			<div class="moderation-form__actions">
+				<button type="submit" class="btn btn--primary"
+						th:text="${locale.code == 'en' ? 'Create draft' : 'Создать черновик'}">Создать черновик</button>
+			</div>
+		</form>
+	</section>
+
+	<section class="profile-card" th:if="${submission != null}">
+		<h2 th:text="${submission.videoId}">video_id</h2>
+		<div class="moderation-meta">
+			<span th:text="${submission.sectionId} + ' / ' + ${submission.lessonId}"></span>
+			<span class="status-badge" th:text="${submission.status}"></span>
+		</div>
+
+		<div class="alert alert--success" th:if="${videoStatus != null and videoStatus.ready()}">
+			<span th:if="${locale.code == 'en'}"
+				  th:text="'Ready: ' + ${videoStatus.frameCount()} + ' frames, ' + ${videoStatus.fps()} + ' fps, ' + ${videoStatus.width()} + '×' + ${videoStatus.height()}"></span>
+			<span th:unless="${locale.code == 'en'}"
+				  th:text="'Готово: ' + ${videoStatus.frameCount()} + ' кадров, ' + ${videoStatus.fps()} + ' fps, ' + ${videoStatus.width()} + '×' + ${videoStatus.height()}"></span>
+		</div>
+
+		<div class="moderation-step">
+			<h3 th:text="${locale.code == 'en' ? '1. Convert video' : '1. Конвертация видео'}">Конвертация</h3>
+			<p class="muted">
+				<span th:text="${locale.code == 'en' ? 'Target:' : 'Параметры:'}">Параметры:</span>
+				<span th:text="${videoFps} + ' fps, ' + ${videoWidth} + '×' + ${videoHeight} + ' PNG'"></span>
+			</p>
+			<form class="moderation-form" method="post" enctype="multipart/form-data"
+				  th:action="@{/moderation/video/convert(lang=${locale.code})}">
+				<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+				<input type="hidden" name="submissionId" th:value="${submission.id}"/>
+				<input type="hidden" name="returnTo" value="pseudo-video"/>
+				<label>
+					<span th:text="${locale.code == 'en' ? 'Source video (mp4, webm, mov…)' : 'Исходное видео (mp4, webm, mov…)'}">Видео</span>
+					<input type="file" name="video" accept="video/*" required/>
+				</label>
+				<div class="moderation-form__actions">
+					<button type="submit" class="btn btn--primary"
+							th:text="${locale.code == 'en' ? 'Convert to PNG frames' : 'Создать кадры PNG'}">Конвертировать</button>
+				</div>
+			</form>
+			<p class="field-hint" th:text="${locale.code == 'en' ? 'Requires FFmpeg (app.moderation.ffmpeg-executable).' : 'Нужен FFmpeg (app.moderation.ffmpeg-executable).'}"></p>
+		</div>
+
+		<div class="moderation-step" th:if="${videoStatus != null and videoStatus.ready()}">
+			<h3 th:text="${locale.code == 'en' ? '2. Download' : '2. Скачать'}">Скачать</h3>
+			<ul class="moderation-links">
+				<li>
+					<a class="btn btn--secondary btn--small"
+					   th:href="@{/moderation/submissions/{id}/download-video-jar(id=${submission.id})}"
+					   th:text="${locale.code == 'en' ? 'Pseudo-video JAR' : 'JAR псевдо-видео'}">JAR</a>
+				</li>
+				<li>
+					<a class="btn btn--secondary btn--small"
+					   th:href="@{/moderation/submissions/{id}/download-frames-zip(id=${submission.id})}"
+					   th:text="${locale.code == 'en' ? 'ZIP with PNG frames' : 'ZIP с кадрами PNG'}">ZIP</a>
+				</li>
+			</ul>
+			<form method="post" th:action="@{/moderation/lesson/build-video-jar(lang=${locale.code})}" class="inline-form moderation-submission__actions">
+				<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+				<input type="hidden" name="submissionId" th:value="${submission.id}"/>
+				<input type="hidden" name="returnTo" value="pseudo-video"/>
+				<button type="submit" class="btn btn--secondary"
+						th:text="${locale.code == 'en' ? 'Rebuild JAR' : 'Пересобрать JAR'}">Пересобрать JAR</button>
+			</form>
+		</div>
+
+		<div class="moderation-step">
+			<h3 th:text="${locale.code == 'en' ? '3. Attach to a lesson (optional)' : '3. Привязать к уроку (необязательно)'}">Урок</h3>
+			<p class="muted" th:text="${locale.code == 'en'
+				? 'To publish a full lesson with this video, open the lesson editor and use the same video id.'
+				: 'Чтобы оформить полный урок с этим видео, откройте редактор урока с тем же video id.'}"></p>
+			<p class="moderation-submission__actions">
+				<a class="btn btn--secondary" th:href="@{/moderation/lesson(lang=${locale.code})}"
+				   th:text="${locale.code == 'en' ? 'Open lesson editor' : 'Открыть редактор урока'}">Редактор урока</a>
+			</p>
+		</div>
+	</section>
+</main>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+</body>
+</html>

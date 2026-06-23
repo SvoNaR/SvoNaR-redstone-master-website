@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head}"></head>
+<body>
+<div th:replace="~{fragments/layout :: header}"></div>
+
+<main class="page">
+	<h1 th:text="${pageTitle}">Администрация</h1>
+
+	<div th:replace="~{fragments/admin :: nav}"></div>
+
+	<p class="moderation-intro" th:text="${locale.code == 'en'
+		? 'Manage moderators, review lesson submissions, and handle comment mutes.'
+		: 'Управление модераторами, проверка уроков и работа с мьютами комментариев.'}"></p>
+
+	<section class="section-block">
+		<h2 th:text="${locale.code == 'en' ? 'Quick start' : 'Быстрый старт'}">Быстрый старт</h2>
+		<div class="moderation-cards">
+			<a class="moderation-card-link" th:href="@{/admin/lesson-submissions(lang=${locale.code})}">
+				<span class="moderation-card-link__title"
+					  th:text="${locale.code == 'en' ? 'Lesson review queue' : 'Очередь уроков модераторов'}"></span>
+				<span class="moderation-card-link__desc"
+					  th:text="${locale.code == 'en'
+					  	? 'Approve or reject lesson JARs submitted by moderators.'
+					  	: 'Одобряйте или отклоняйте JAR-файлы уроков от модераторов.'}"></span>
+			</a>
+			<a class="moderation-card-link" th:href="@{/admin/moderators(lang=${locale.code})}">
+				<span class="moderation-card-link__title"
+					  th:text="${locale.code == 'en' ? 'Assign moderators' : 'Назначение модераторов'}"></span>
+				<span class="moderation-card-link__desc"
+					  th:text="${locale.code == 'en'
+					  	? 'Promote users to moderators or remove the moderator role.'
+					  	: 'Назначайте пользователей модераторами или снимайте роль.'}"></span>
+			</a>
+			<a class="moderation-card-link" th:href="@{/admin/unmute-moderator(lang=${locale.code})}">
+				<span class="moderation-card-link__title"
+					  th:text="${locale.code == 'en' ? 'Unmute moderators' : 'Снять мьют с модераторов'}"></span>
+				<span class="moderation-card-link__desc"
+					  th:text="${locale.code == 'en'
+					  	? 'Remove comment restrictions from muted moderators.'
+					  	: 'Снимайте ограничения на комментарии с замьюченных модераторов.'}"></span>
+			</a>
+		</div>
+	</section>
+
+	<section class="profile-card admin-stats">
+		<h2 th:text="${locale.code == 'en' ? 'Statistics' : 'Статистика'}">Статистика</h2>
+		<dl class="admin-stats__grid">
+			<div>
+				<dt th:text="${locale.code == 'en' ? 'Regular users' : 'Пользователи'}">Пользователи</dt>
+				<dd th:text="${stats.totalUsers()}">0</dd>
+			</div>
+			<div>
+				<dt th:text="${locale.code == 'en' ? 'Moderators' : 'Модераторы'}">Модераторы</dt>
+				<dd th:text="${stats.moderators()}">0</dd>
+			</div>
+			<div>
+				<dt th:text="${locale.code == 'en' ? 'Administrators' : 'Администраторы'}">Администраторы</dt>
+				<dd th:text="${stats.administrators()}">0</dd>
+			</div>
+			<div>
+				<dt th:text="${locale.code == 'en' ? 'Lesson comments' : 'Комментарии к урокам'}">Комментарии</dt>
+				<dd th:text="${stats.lessonComments()}">0</dd>
+			</div>
+			<div>
+				<dt th:text="${locale.code == 'en' ? 'Lesson completions (mod sync)' : 'Пройденные уроки (синхр. мода)'}">Пройденные уроки</dt>
+				<dd th:text="${stats.lessonCompletions()}">0</dd>
+			</div>
+			<div>
+				<dt th:text="${locale.code == 'en' ? 'News posts' : 'Новости'}">Новости</dt>
+				<dd th:text="${stats.newsPosts()}">0</dd>
+			</div>
+		</dl>
+	</section>
+</main>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+</body>
+</html>

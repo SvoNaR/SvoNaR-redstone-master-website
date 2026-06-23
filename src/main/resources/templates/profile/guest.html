@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head}"></head>
+<body>
+<div th:replace="~{fragments/layout :: header}"></div>
+
+<main class="page page--auth">
+	<div class="auth-center">
+		<h1 th:text="${locale.code == 'en' ? 'Profile' : 'Профиль'}">Профиль</h1>
+
+		<div class="alert alert--success" th:if="${loginSuccess}">
+			<span th:text="${locale.code == 'en' ? 'Signed in successfully.' : 'Вход выполнен.'}"></span>
+		</div>
+		<div class="alert alert--success" th:if="${logoutSuccess}">
+			<span th:text="${locale.code == 'en' ? 'Signed out.' : 'Вы вышли из аккаунта.'}"></span>
+		</div>
+		<div class="alert alert--error" th:if="${loginError}">
+			<span th:text="${locale.code == 'en' ? 'Invalid username/email or password.' : 'Неверный никнейм, почта или пароль.'}"></span>
+		</div>
+		<div class="alert alert--warn" th:if="${registrationExpired}">
+			<span th:text="${locale.code == 'en'
+				? 'The confirmation period has expired and your registration data was deleted. Please sign up again.'
+				: 'Срок подтверждения истёк, данные регистрации удалены. Зарегистрируйтесь снова.'}"></span>
+		</div>
+		<div class="alert alert--info" th:if="${modAuthFlow}">
+			<span th:text="${locale.code == 'en'
+				? 'Sign in or create an account to link your profile with the Minecraft mod.'
+				: 'Войдите или зарегистрируйтесь, чтобы связать профиль с модом Minecraft.'}"></span>
+		</div>
+
+		<div class="profile-tabs">
+			<a th:classappend="${activeTab == 'login' ? ' active' : ''}"
+			   th:href="@{/profile(lang=${locale.code}, tab='login')}"
+			   th:text="${locale.code == 'en' ? 'Sign in' : 'Вход'}">Вход</a>
+			<a th:classappend="${activeTab == 'register' ? ' active' : ''}"
+			   th:href="@{/profile(lang=${locale.code}, tab='register')}"
+			   th:text="${locale.code == 'en' ? 'Sign up' : 'Регистрация'}">Регистрация</a>
+		</div>
+
+		<section class="profile-card" th:if="${activeTab != 'register'}">
+			<h2 th:text="${locale.code == 'en' ? 'Sign in' : 'Вход в аккаунт'}">Вход</h2>
+			<form class="auth-form" th:action="@{/profile/login}" method="post">
+				<input type="hidden" name="lang" th:value="${locale.code}"/>
+				<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+				<label>
+					<span th:text="${locale.code == 'en' ? 'Username or email' : 'Никнейм или почта'}"></span>
+					<input type="text" name="login" autocomplete="username" required/>
+				</label>
+				<label>
+					<span th:text="${locale.code == 'en' ? 'Password' : 'Пароль'}"></span>
+					<input type="password" name="password" autocomplete="current-password" required/>
+				</label>
+				<button type="submit" class="btn btn--primary btn--block"
+						th:text="${locale.code == 'en' ? 'Sign in' : 'Войти'}">Войти</button>
+			</form>
+		</section>
+
+		<section class="profile-card" th:if="${activeTab == 'register'}">
+			<h2 th:text="${locale.code == 'en' ? 'Create account' : 'Регистрация'}">Регистрация</h2>
+			<form class="auth-form" th:action="@{/profile/register}" th:object="${registerForm}" method="post">
+				<input type="hidden" name="lang" th:value="${locale.code}"/>
+				<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+				<label>
+					<span th:text="${locale.code == 'en' ? 'Username' : 'Никнейм'}"></span>
+					<input type="text" th:field="*{username}" autocomplete="username"
+						   minlength="3" maxlength="20" pattern="[A-Za-z0-9][A-Za-z0-9_]{2,19}"
+						   th:title="${locale.code == 'en'
+							? '3–20 characters: letters, digits and underscore; cannot start with underscore'
+							: '3–20 символов: латиница, цифры и _; не может начинаться с _'}"/>
+					<span class="field-hint" th:text="${locale.code == 'en'
+						? '3–20 characters: letters, digits and underscore.'
+						: '3–20 символов: латиница, цифры и _. Не может начинаться с _.'}"></span>
+					<span class="field-error" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></span>
+				</label>
+				<label>
+					<span th:text="${locale.code == 'en' ? 'Email' : 'Почта'}"></span>
+					<input type="email" th:field="*{email}" autocomplete="email" maxlength="255"/>
+					<span class="field-hint" th:text="${locale.code == 'en'
+						? 'A confirmation email will be sent to this address.'
+						: 'На этот адрес придёт письмо для подтверждения аккаунта.'}"></span>
+					<span class="field-error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></span>
+				</label>
+				<label>
+					<span th:text="${locale.code == 'en' ? 'Password' : 'Пароль'}"></span>
+					<input type="password" th:field="*{password}" autocomplete="new-password"
+						   minlength="8" maxlength="72"/>
+					<span class="field-hint" th:text="${locale.code == 'en'
+						? 'At least 8 characters, include a letter and a digit, no spaces.'
+						: 'Минимум 8 символов, буква и цифра, без пробелов.'}"></span>
+					<span class="field-error" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></span>
+				</label>
+				<label>
+					<span th:text="${locale.code == 'en' ? 'Confirm password' : 'Подтвердите пароль'}"></span>
+					<input type="password" th:field="*{confirmPassword}" autocomplete="new-password"/>
+					<span class="field-error" th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}"></span>
+				</label>
+				<button type="submit" class="btn btn--primary btn--block"
+						th:text="${locale.code == 'en' ? 'Sign up' : 'Зарегистрироваться'}">Зарегистрироваться</button>
+			</form>
+		</section>
+	</div>
+</main>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+</body>
+</html>

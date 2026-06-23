@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<body>
+<nav class="profile-tabs moderation-tabs" th:fragment="nav">
+	<a th:classappend="${currentPath == '/moderation' ? ' active' : ''}"
+	   th:href="@{/moderation(lang=${locale.code})}"
+	   th:text="${locale.code == 'en' ? 'Overview' : 'Обзор'}">Обзор</a>
+	<a th:classappend="${currentPath.startsWith('/moderation/pseudo-video') ? ' active' : ''}"
+	   th:href="@{/moderation/pseudo-video(lang=${locale.code})}"
+	   th:text="${locale.code == 'en' ? 'Pseudo-video' : 'Псевдо-видео'}">Псевдо-видео</a>
+	<a th:classappend="${currentPath.startsWith('/moderation/lesson') ? ' active' : ''}"
+	   th:href="@{/moderation/lesson(lang=${locale.code})}"
+	   th:text="${locale.code == 'en' ? 'Lesson editor' : 'Редактор урока'}">Редактор урока</a>
+	<a th:classappend="${currentPath.startsWith('/moderation/submissions') ? ' active' : ''}"
+	   th:href="@{/moderation/submissions(lang=${locale.code})}"
+	   th:text="${locale.code == 'en' ? 'My submissions' : 'Мои отправки'}">Мои отправки</a>
+	<a th:classappend="${currentPath.startsWith('/moderation/mute-user') ? ' active' : ''}"
+	   th:href="@{/moderation/mute-user(lang=${locale.code})}"
+	   th:text="${locale.code == 'en' ? 'Mute user' : 'Мьют'}">Мьют</a>
+	<a th:classappend="${currentPath.startsWith('/moderation/unmute-user') ? ' active' : ''}"
+	   th:href="@{/moderation/unmute-user(lang=${locale.code})}"
+	   th:text="${locale.code == 'en' ? 'Unmute' : 'Снять мьют'}">Снять мьют</a>
+</nav>
+</body>
+</html>

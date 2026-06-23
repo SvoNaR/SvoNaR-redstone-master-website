@@ -1,0 +1,13 @@
+# Локальные секреты для production (скопируйте в application-local.properties на сервере).
+# application-local.properties не попадает в Git.
+
+spring.profiles.active=production
+
+app.base-url=https://redstone-master.ru
+app.admin.password=ЗАМЕНИТЕ_НА_СИЛЬНЫЙ_ПАРОЛЬ
+
+# Пароль приложения Gmail (Google Account → Security → App passwords)
+spring.mail.password=
+
+# FFmpeg (если не в PATH)
+# app.moderation.ffmpeg-executable=/usr/bin/ffmpeg

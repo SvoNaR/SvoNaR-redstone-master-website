@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head}"></head>
+<body>
+<div th:replace="~{fragments/layout :: header}"></div>
+
+<main class="page">
+	<h1 th:text="${pageTitle}">Снять мьют с модератора</h1>
+
+	<div th:replace="~{fragments/admin :: nav}"></div>
+
+	<div class="alert alert--success" th:if="${successMessage}" th:text="${successMessage}"></div>
+	<div class="alert alert--error" th:if="${errorMessage}" th:text="${errorMessage}"></div>
+
+	<section class="profile-card">
+		<h2 th:text="${locale.code == 'en' ? 'Active moderator mutes' : 'Активные мьюты модераторов'}">Активные мьюты</h2>
+		<p class="muted" th:text="${locale.code == 'en'
+			? 'Moderators with an active comment mute. Only administrators can remove mutes from moderators.'
+			: 'Модераторы с активным мьютом комментариев. Снять мьют с модератора может только администратор.'}"></p>
+
+		<div class="table-scroll" th:if="${!mutedModerators.isEmpty()}">
+			<table class="data-table admin-table admin-table--mutes">
+				<colgroup>
+					<col class="mute-col-username"/>
+					<col class="mute-col-email"/>
+					<col class="mute-col-date"/>
+					<col class="mute-col-reason"/>
+					<col class="mute-col-muted-by"/>
+					<col class="mute-col-action"/>
+				</colgroup>
+				<thead>
+				<tr>
+					<th th:text="${locale.code == 'en' ? 'Username' : 'Никнейм'}">Никнейм</th>
+					<th th:text="${locale.code == 'en' ? 'Email' : 'Почта'}">Почта</th>
+					<th class="mute-table__date-head"
+						th:text="${locale.code == 'en' ? 'Until (UTC)' : 'До (UTC)'}">До (UTC)</th>
+					<th th:text="${locale.code == 'en' ? 'Reason' : 'Причина'}">Причина</th>
+					<th th:text="${locale.code == 'en' ? 'Muted by' : 'Замьючен'}">Замьючен</th>
+					<th></th>
+				</tr>
+				</thead>
+				<tbody>
+				<tr th:each="entry : ${mutedModerators}">
+					<td th:text="${entry.username()}"></td>
+					<td class="mute-table__email" th:text="${entry.email()}" th:attr="title=${entry.email()}"></td>
+					<td class="mute-table__date"
+						th:text="${#temporals.format(entry.mutedUntil(), 'dd.MM.yyyy HH:mm')}"
+						th:attr="title=${#temporals.format(entry.mutedUntil(), 'dd.MM.yyyy HH:mm') + ' UTC'}"></td>
+					<td class="mute-table__reason" th:text="${entry.reason()}" th:attr="title=${entry.reason()}"></td>
+					<td th:text="${entry.mutedByUsername()}"></td>
+					<td>
+						<form th:action="@{/admin/unmute-moderator}" method="post" class="inline-form"
+							  th:attr="data-confirm-message=${locale.code == 'en'
+							  	? 'Remove comment mute from moderator ' + entry.username() + '?'
+							  	: 'Снять мьют комментариев с модератора ' + entry.username() + '?'}">
+							<input type="hidden" name="userId" th:value="${entry.userId()}"/>
+							<input type="hidden" name="lang" th:value="${locale.code}"/>
+							<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+							<button type="submit" class="btn btn--small btn--primary"
+									th:text="${locale.code == 'en' ? 'Unmute' : 'Снять мьют'}"></button>
+						</form>
+					</td>
+				</tr>
+				</tbody>
+			</table>
+		</div>
+
+		<p class="muted" th:if="${mutedModerators.isEmpty()}"
+		   th:text="${locale.code == 'en'
+		   	? 'No moderators are currently muted.'
+		   	: 'Сейчас нет замьюченных модераторов.'}"></p>
+	</section>
+</main>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+</body>
+</html>

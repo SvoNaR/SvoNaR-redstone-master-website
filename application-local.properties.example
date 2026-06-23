@@ -1,0 +1,19 @@
+# Скопируйте этот файл в application-local.properties в той же папке (redstone-master-web/).
+# application-local.properties не попадает в Git.
+
+# Пароль приложения Gmail (Google Account → Security → App passwords), не пароль от аккаунта
+spring.mail.password=
+
+# Пароль входа администратора по умолчанию (логин: admin)
+app.admin.password=Admin123!
+
+# Локальная разработка (по умолчанию в application.properties — localhost:8080):
+# app.base-url=http://localhost:8080
+
+# Production на сервере — см. application-production-local.properties.example
+# spring.profiles.active=production
+# app.base-url=https://redstone-master.ru
+
+# FFmpeg для конвертера псевдо-видео (по умолчанию ищется в PATH как "ffmpeg").
+# На Windows при запуске из IDE, если не находится: полный путь к ffmpeg.exe
+# app.moderation.ffmpeg-executable=C:/Users/ИМЯ/AppData/Local/Microsoft/WinGet/Packages/Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe/ffmpeg-8.1.1-full_build/bin/ffmpeg.exe

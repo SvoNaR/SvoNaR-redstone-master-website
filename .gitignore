@@ -1,0 +1,18 @@
+target/
+.idea/
+*.iml
+.classpath
+.project
+.settings/
+
+# Локальные секреты и данные приложения
+application-local.properties
+.env
+.env.*
+!.env.example
+
+# H2 database (пользователи, сессии)
+data/
+
+# Portable Maven (локальная установка)
+.tools/

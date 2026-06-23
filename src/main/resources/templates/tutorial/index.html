@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head}"></head>
+<body>
+<div th:replace="~{fragments/layout :: header}"></div>
+
+<main class="page">
+	<h1 th:text="${locale.code == 'en' ? 'Tutorial' : 'Обучение'}">Обучение</h1>
+	<p class="note" th:text="${disclaimer}"></p>
+
+	<div class="tutorial-grid">
+		<article class="tutorial-card" th:each="section : ${sections}">
+			<h2>
+				<a th:href="@{/tutorial/{id}(id=${section.id()}, lang=${locale.code})}"
+				   th:text="${section.title()}">Раздел</a>
+			</h2>
+			<p th:text="${section.summary()}">Краткое описание</p>
+			<p class="muted" th:text="${section.lessons().size() + (locale.code == 'en' ? ' lessons' : ' уроков')}"></p>
+		</article>
+	</div>
+</main>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+</body>
+</html>

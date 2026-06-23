@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org"
+	  xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head}"></head>
+<body>
+<div th:replace="~{fragments/layout :: header}"></div>
+
+<main class="page page--narrow">
+	<p class="breadcrumb">
+		<a th:href="@{/news(lang=${locale.code})}" th:text="${locale.code == 'en' ? 'News' : 'Новости'}"></a>
+		→
+		<span th:text="${newsPost.title()}"></span>
+	</p>
+
+	<p class="alert alert--success" th:if="${editSuccess}"
+	   th:text="${locale.code == 'en' ? 'News updated.' : 'Новость сохранена.'}"></p>
+
+	<article class="profile-card news-detail">
+		<h1 th:text="${newsPost.title()}">Title</h1>
+		<p class="news-card__meta muted">
+			<span th:text="${newsPost.authorName()}"></span>
+			·
+			<span th:text="${#temporals.format(newsPost.createdAt(), 'dd.MM.yyyy HH:mm')}"></span>
+		</p>
+		<div class="news-detail__body preformatted" th:text="${newsPost.body()}"></div>
+	</article>
+
+	<div class="form-actions-right">
+		<a class="btn btn--secondary" th:href="@{/news(lang=${locale.code})}"
+		   th:text="${locale.code == 'en' ? 'Back to news' : 'К списку новостей'}"></a>
+		<a sec:authorize="hasAnyRole('MODERATOR','ADMIN')"
+		   class="btn btn--primary"
+		   th:href="@{/news/{id}/edit(id=${newsPost.id()}, lang=${locale.code})}"
+		   th:text="${locale.code == 'en' ? 'Edit' : 'Редактировать'}"></a>
+		<form sec:authorize="hasAnyRole('MODERATOR','ADMIN')"
+			  th:action="@{/news/{id}/delete(id=${newsPost.id()})}"
+			  method="post"
+			  th:attr="data-confirm-message=${locale.code == 'en' ? 'Delete this news post? All related notifications will be removed.' : 'Удалить эту новость? Связанные уведомления у пользователей будут удалены.'}">
+			<input type="hidden" name="lang" th:value="${locale.code}"/>
+			<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+			<button type="submit" class="btn btn--secondary"
+					th:text="${locale.code == 'en' ? 'Delete' : 'Удалить'}"></button>
+		</form>
+	</div>
+</main>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+</body>
+</html>

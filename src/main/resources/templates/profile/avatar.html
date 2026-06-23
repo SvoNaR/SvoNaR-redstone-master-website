@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head}"></head>
+<body>
+<div th:replace="~{fragments/layout :: header}"></div>
+
+<main class="page page--auth">
+	<div class="auth-center auth-center--wide">
+		<p class="breadcrumb">
+			<a th:href="@{/profile(lang=${locale.code})}" th:text="${locale.code == 'en' ? 'Profile' : 'Профиль'}"></a>
+			→
+			<span th:text="${pageTitle}"></span>
+		</p>
+
+		<h1 th:text="${pageTitle}">Смена аватарки</h1>
+
+		<div class="alert alert--error" th:if="${avatarErrorMessage}">
+			<span th:text="${avatarErrorMessage}"></span>
+		</div>
+
+		<section class="profile-card avatar-upload-card">
+			<div class="avatar-upload-preview">
+				<img class="profile-avatar profile-avatar--image profile-avatar--large"
+					 th:src="${profileUser.avatarUrl()}" th:alt="${profileUser.username()}" width="64" height="64"/>
+				<p class="muted" th:text="${locale.code == 'en' ? 'Current avatar' : 'Текущая аватарка'}"></p>
+			</div>
+
+			<div class="avatar-upload-block">
+				<h2 th:text="${locale.code == 'en' ? 'From Minecraft skin' : 'Из скина Minecraft'}">Из скина Minecraft</h2>
+				<p class="muted" th:text="${locale.code == 'en'
+					? 'Upload a standard 64×64 skin PNG. We crop the 8×8 face (with hat layer).'
+					: 'Загрузите стандартный скин PNG 64×64. Мы вырежем лицо 8×8 (со слоем шапки).'}"></p>
+				<form th:action="@{/profile/avatar}" method="post" enctype="multipart/form-data" class="avatar-upload-form">
+					<input type="hidden" name="lang" th:value="${locale.code}"/>
+					<input type="hidden" name="mode" value="skin"/>
+					<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+					<input type="file" name="file" accept="image/png" required/>
+					<button type="submit" class="btn btn--primary"
+							th:text="${locale.code == 'en' ? 'Upload skin' : 'Загрузить скин'}"></button>
+				</form>
+			</div>
+
+			<div class="avatar-upload-block">
+				<h2 th:text="${locale.code == 'en' ? 'Ready-made avatar' : 'Готовая аватарка'}">Готовая аватарка</h2>
+				<p class="muted" th:text="${locale.code == 'en'
+					? 'Upload a PNG image exactly 8×8 pixels.'
+					: 'Загрузите PNG ровно 8×8 пикселей.'}"></p>
+				<form th:action="@{/profile/avatar}" method="post" enctype="multipart/form-data" class="avatar-upload-form">
+					<input type="hidden" name="lang" th:value="${locale.code}"/>
+					<input type="hidden" name="mode" value="avatar"/>
+					<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+					<input type="file" name="file" accept="image/png" required/>
+					<button type="submit" class="btn btn--primary"
+							th:text="${locale.code == 'en' ? 'Upload avatar' : 'Загрузить аватарку'}"></button>
+				</form>
+			</div>
+		</section>
+	</div>
+</main>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+</body>
+</html>
