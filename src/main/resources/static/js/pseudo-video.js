@@ -3,6 +3,8 @@
 
 	const DEFAULT_WIDTH = 854;
 	const DEFAULT_HEIGHT = 480;
+	const PRELOAD_AHEAD = 20;
+	const MAX_CACHE_SIZE = 80;
 
 	function formatTime(seconds) {
 		const total = Math.max(0, Math.floor(seconds));
@@ -34,9 +36,10 @@
 			this.frameIndex = 0;
 			this.playing = false;
 			this.scrubbing = false;
-			this.accumulator = 0;
-			this.lastTick = 0;
-			this.imageCache = new Map();
+			this.displayGeneration = 0;
+			this.playTimer = null;
+			this.imagePromises = new Map();
+			this.loadedImages = new Map();
 
 			this.applyInitialLayout();
 			this.bindEvents();
@@ -59,19 +62,30 @@
 
 			this.slider.addEventListener("input", () => {
 				this.scrubbing = true;
-				this.frameIndex = Number(this.slider.value);
-				this.drawFrame(this.frameIndex);
-				this.updateTimeLabel();
+				this.stopPlaybackLoop();
+				this.bumpDisplayGeneration();
+				this.presentFrame(Number(this.slider.value));
 			});
 			this.slider.addEventListener("change", () => {
 				this.scrubbing = false;
 			});
 			this.slider.addEventListener("pointerdown", () => {
 				this.scrubbing = true;
+				this.stopPlaybackLoop();
+				this.bumpDisplayGeneration();
 			});
 			this.slider.addEventListener("pointerup", () => {
 				this.scrubbing = false;
 			});
+		}
+
+		bumpDisplayGeneration() {
+			this.displayGeneration += 1;
+		}
+
+		frameDurationMs() {
+			const fps = this.meta && this.meta.fps ? this.meta.fps : 15;
+			return 1000 / Math.max(1, fps);
 		}
 
 		showError(message) {
@@ -95,10 +109,10 @@
 				this.slider.max = String(frameCount - 1);
 				this.slider.value = "0";
 				this.resizeCanvas();
-				await this.drawFrame(0);
+				await this.presentFrame(0);
+				this.preloadRange(1, PRELOAD_AHEAD);
 				this.updateTimeLabel();
 				this.updatePlayUi();
-				requestAnimationFrame((time) => this.tick(time));
 			} catch (error) {
 				console.error("Pseudo video load failed", error);
 				this.showError(
@@ -120,69 +134,117 @@
 			if (this.frameElement) {
 				this.frameElement.style.aspectRatio = width + " / " + height;
 			}
-			this.drawFrame(this.frameIndex);
+			this.presentFrame(this.frameIndex);
 		}
 
-		async loadImage(index) {
-			if (this.imageCache.has(index)) {
-				return this.imageCache.get(index);
+		trimCache() {
+			while (this.imagePromises.size > MAX_CACHE_SIZE) {
+				const oldest = this.imagePromises.keys().next().value;
+				this.imagePromises.delete(oldest);
+				this.loadedImages.delete(oldest);
 			}
+		}
+
+		loadImage(index) {
+			if (this.loadedImages.has(index)) {
+				return Promise.resolve(this.loadedImages.get(index));
+			}
+			if (this.imagePromises.has(index)) {
+				return this.imagePromises.get(index);
+			}
+
 			const image = new Image();
 			image.decoding = "async";
 			const promise = new Promise((resolve, reject) => {
-				image.onload = () => resolve(image);
+				image.onload = () => {
+					this.loadedImages.set(index, image);
+					resolve(image);
+				};
 				image.onerror = () => reject(new Error("Frame load failed: " + index));
 			});
 			image.src = frameUrl(this.baseUrl, index);
-			this.imageCache.set(index, promise);
-			if (this.imageCache.size > 24) {
-				const oldest = this.imageCache.keys().next().value;
-				this.imageCache.delete(oldest);
-			}
+			this.imagePromises.set(index, promise);
+			this.trimCache();
 			return promise;
 		}
 
-		async drawFrame(index) {
+		preloadRange(startIndex, count) {
+			if (!this.meta) {
+				return;
+			}
+			const end = Math.min(this.meta.frameCount, startIndex + count);
+			for (let index = startIndex; index < end; index += 1) {
+				this.loadImage(index).catch(() => {
+				});
+			}
+		}
+
+		async presentFrame(index) {
 			if (!this.meta) {
 				return;
 			}
 			const clamped = Math.max(0, Math.min(this.meta.frameCount - 1, index));
-			this.frameIndex = clamped;
-			this.slider.value = String(clamped);
+			const generation = this.displayGeneration;
 			try {
 				const image = await this.loadImage(clamped);
+				if (generation !== this.displayGeneration) {
+					return;
+				}
+				this.frameIndex = clamped;
+				this.slider.value = String(clamped);
 				this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 				this.ctx.drawImage(image, 0, 0, this.canvas.width, this.canvas.height);
+				this.updateTimeLabel();
 			} catch (error) {
 				console.warn(error);
 			}
 		}
 
-		tick(now) {
-			if (this.meta && this.playing && !this.scrubbing) {
-				if (this.lastTick === 0) {
-					this.lastTick = now;
-				}
-				const delta = (now - this.lastTick) / 1000;
-				this.lastTick = now;
-				this.accumulator += delta;
-				const frameDuration = 1 / (this.meta.fps || 15);
-				while (this.accumulator >= frameDuration) {
-					this.accumulator -= frameDuration;
-					if (this.frameIndex >= this.meta.frameCount - 1) {
-						this.playing = false;
-						this.accumulator = 0;
-						break;
-					}
-					this.frameIndex += 1;
-					this.drawFrame(this.frameIndex);
-				}
-				this.updateTimeLabel();
-				this.updatePlayUi();
-			} else {
-				this.lastTick = now;
+		stopPlaybackLoop() {
+			if (this.playTimer !== null) {
+				clearTimeout(this.playTimer);
+				this.playTimer = null;
 			}
-			requestAnimationFrame((time) => this.tick(time));
+		}
+
+		startPlaybackLoop() {
+			this.stopPlaybackLoop();
+			const schedule = () => {
+				if (!this.playing || this.scrubbing || !this.meta) {
+					return;
+				}
+				const generation = this.displayGeneration;
+				const nextIndex = this.frameIndex + 1;
+				if (nextIndex >= this.meta.frameCount) {
+					this.playing = false;
+					this.updatePlayUi();
+					return;
+				}
+
+				this.loadImage(nextIndex)
+					.then(() => {
+						if (!this.playing || this.scrubbing || generation !== this.displayGeneration) {
+							return;
+						}
+						return this.presentFrame(nextIndex);
+					})
+					.then(() => {
+						if (!this.playing || this.scrubbing || generation !== this.displayGeneration) {
+							return;
+						}
+						this.preloadRange(nextIndex + 1, PRELOAD_AHEAD);
+						this.updatePlayUi();
+						this.playTimer = setTimeout(schedule, this.frameDurationMs());
+					})
+					.catch((error) => {
+						console.warn(error);
+						if (this.playing && generation === this.displayGeneration) {
+							this.playTimer = setTimeout(schedule, this.frameDurationMs());
+						}
+					});
+			};
+
+			this.playTimer = setTimeout(schedule, this.frameDurationMs());
 		}
 
 		togglePlay() {
@@ -191,14 +253,16 @@
 			}
 			if (this.playing) {
 				this.playing = false;
+				this.bumpDisplayGeneration();
+				this.stopPlaybackLoop();
 			} else {
 				if (this.frameIndex >= this.meta.frameCount - 1) {
-					this.frameIndex = 0;
-					this.drawFrame(0);
+					this.bumpDisplayGeneration();
+					this.presentFrame(0);
 				}
 				this.playing = true;
-				this.lastTick = 0;
-				this.accumulator = 0;
+				this.preloadRange(this.frameIndex + 1, PRELOAD_AHEAD);
+				this.startPlaybackLoop();
 			}
 			this.updatePlayUi();
 		}
@@ -207,10 +271,21 @@
 			if (!this.meta) {
 				return;
 			}
+			const wasPlaying = this.playing;
+			this.playing = false;
+			this.bumpDisplayGeneration();
+			this.stopPlaybackLoop();
+
 			const fps = this.meta.fps || 15;
 			const next = this.frameIndex + Math.round(deltaSeconds * fps);
-			this.drawFrame(next);
-			this.updateTimeLabel();
+			this.presentFrame(next).then(() => {
+				this.preloadRange(this.frameIndex + 1, PRELOAD_AHEAD);
+				if (wasPlaying) {
+					this.playing = true;
+					this.startPlaybackLoop();
+					this.updatePlayUi();
+				}
+			});
 		}
 
 		updateTimeLabel() {
