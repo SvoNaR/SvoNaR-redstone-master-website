@@ -16,3 +16,7 @@ data/
 
 # Portable Maven (локальная установка)
 .tools/
+
+# JVM crash logs
+hs_err_pid*
+replay_pid*
