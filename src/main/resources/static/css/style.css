@@ -1326,9 +1326,6 @@ table.data-table.admin-table.admin-table--mutes td:last-child {
 
 .pseudo-video-player__frame {
 	position: relative;
-	display: flex;
-	justify-content: center;
-	align-items: center;
 	width: 100%;
 	aspect-ratio: 854 / 480;
 	background: #000;
@@ -1338,10 +1335,16 @@ table.data-table.admin-table.admin-table--mutes td:last-child {
 
 .pseudo-video-player__canvas,
 .pseudo-video-player__video {
-	display: block;
+	position: absolute;
+	inset: 0;
 	width: 100%;
 	height: 100%;
 	object-fit: contain;
+}
+
+.pseudo-video-player__canvas[hidden],
+.pseudo-video-player__video[hidden] {
+	display: none;
 }
 
 .pseudo-video-player__canvas {
