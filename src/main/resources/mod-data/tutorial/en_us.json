@@ -58,6 +58,9 @@
               "path": "textures/tutorial/power_sources_block.png",
               "caption": "Redstone block as a constant strength-15 source"
             }
+          ],
+          "videos": [
+            "power_sources_demo"
           ]
         },
         {
@@ -70,6 +73,9 @@
               "path": "textures/tutorial/horizontal_wire.png",
               "caption": "Horizontal dust line with a corner turn via a block"
             }
+          ],
+          "videos": [
+            "horizontal_wire_demo"
           ]
         },
         {
@@ -82,6 +88,9 @@
               "path": "textures/tutorial/vertical_wire.png",
               "caption": "Vertical signal transfer using a torch tower"
             }
+          ],
+          "videos": [
+            "vertical_wire_demo"
           ]
         }
       ]
@@ -109,6 +118,9 @@
               "path": "textures/tutorial/repeater_extend.png",
               "caption": "Extending a dust line with a repeater"
             }
+          ],
+          "videos": [
+            "repeater_extend_demo"
           ]
         }
       ]
@@ -136,6 +148,9 @@
               "path": "textures/tutorial/torch_invert.png",
               "caption": "Signal inversion with a redstone torch"
             }
+          ],
+          "videos": [
+            "torch_invert_demo"
           ]
         },
         {
@@ -433,6 +448,9 @@
               "path": "textures/tutorial/target_hit.png",
               "caption": "Target block output when hit by an arrow"
             }
+          ],
+          "videos": [
+            "target_hit_demo"
           ]
         }
       ]
@@ -460,6 +478,9 @@
               "path": "textures/tutorial/sculk_sound.png",
               "caption": "Sculk sensor reacting to sound and vibrations"
             }
+          ],
+          "videos": [
+            "sculk_sound_demo"
           ]
         },
         {
