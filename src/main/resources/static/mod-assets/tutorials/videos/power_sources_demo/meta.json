@@ -2,5 +2,6 @@
   "fps": 15,
   "width": 854,
   "height": 480,
-  "frameCount": 552
+  "frameCount": 552,
+  "webPlayback": "playback.mp4"
 }

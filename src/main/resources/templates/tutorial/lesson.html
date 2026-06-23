@@ -27,6 +27,8 @@
 		          data-seek-back-label=${locale.code == 'en' ? 'Rewind 5 sec' : 'Назад 5 сек'},
 		          data-seek-forward-label=${locale.code == 'en' ? 'Forward 5 sec' : 'Вперёд 5 сек'}">
 		<div class="pseudo-video-player__frame">
+			<video class="pseudo-video-player__video" playsinline preload="auto" hidden
+				   th:attr="aria-label=${locale.code == 'en' ? 'Tutorial video' : 'Видео урока'}"></video>
 			<canvas class="pseudo-video-player__canvas" width="854" height="480" aria-label="Tutorial video"></canvas>
 			<button type="button" class="pseudo-video-player__play-overlay" aria-label="Play">&#9654;</button>
 		</div>

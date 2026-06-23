@@ -1336,11 +1336,15 @@ table.data-table.admin-table.admin-table--mutes td:last-child {
 	overflow: hidden;
 }
 
-.pseudo-video-player__canvas {
+.pseudo-video-player__canvas,
+.pseudo-video-player__video {
 	display: block;
 	width: 100%;
 	height: 100%;
 	object-fit: contain;
+}
+
+.pseudo-video-player__canvas {
 	image-rendering: pixelated;
 	image-rendering: crisp-edges;
 }
