@@ -163,6 +163,9 @@
               "path": "textures/tutorial/torch_chain.png",
               "caption": "Цепочка факелов для передачи и задержки сигнала"
             }
+          ],
+          "videos": [
+            "torch_chain_demo"
           ]
         }
       ]
@@ -190,6 +193,9 @@
               "path": "textures/tutorial/comparator_chest.png",
               "caption": "Компаратор, считывающий заполненность сундука"
             }
+          ],
+          "videos": [
+            "comparator_chest_demo"
           ]
         },
         {
@@ -202,6 +208,9 @@
               "path": "textures/tutorial/comparator_subtract.png",
               "caption": "Компаратор в режиме вычитания сигналов"
             }
+          ],
+          "videos": [
+            "comparator_subtract_demo"
           ]
         },
         {
@@ -214,6 +223,9 @@
               "path": "textures/tutorial/comparator_lectern.png",
               "caption": "Компаратор у кафедры с книгой"
             }
+          ],
+          "videos": [
+            "comparator_lectern_demo"
           ]
         }
       ]
@@ -241,6 +253,9 @@
               "path": "textures/tutorial/piston_push.png",
               "caption": "Обычный поршень, толкающий блок вперёд"
             }
+          ],
+          "videos": [
+            "piston_push_demo"
           ]
         },
         {
@@ -253,6 +268,9 @@
               "path": "textures/tutorial/piston_sticky.png",
               "caption": "Липкий поршень, возвращающий блок назад"
             }
+          ],
+          "videos": [
+            "piston_sticky_demo"
           ]
         }
       ]
@@ -280,6 +298,9 @@
               "path": "textures/tutorial/observer_detect.png",
               "caption": "Наблюдатель, реагирующий на изменение соседнего блока"
             }
+          ],
+          "videos": [
+            "observer_detect_demo"
           ]
         }
       ]
@@ -307,6 +328,9 @@
               "path": "textures/tutorial/minecart_start.png",
               "caption": "Запуск вагонетки с рельсов и источника сигнала"
             }
+          ],
+          "videos": [
+            "minecart_start_demo"
           ]
         },
         {
@@ -319,6 +343,9 @@
               "path": "textures/tutorial/minecart_hopper.png",
               "caption": "Вагонетка с воронкой для сбора предметов"
             }
+          ],
+          "videos": [
+            "minecart_hopper_demo"
           ]
         },
         {
@@ -331,6 +358,9 @@
               "path": "textures/tutorial/minecart_activator.png",
               "caption": "Активирующие рельсы, ускоряющие вагонетку"
             }
+          ],
+          "videos": [
+            "minecart_activator_demo"
           ]
         },
         {
@@ -343,6 +373,9 @@
               "path": "textures/tutorial/minecart_furnace.png",
               "caption": "Самоходная вагонетка с печью"
             }
+          ],
+          "videos": [
+            "minecart_furnace_demo"
           ]
         },
         {
@@ -355,6 +388,9 @@
               "path": "textures/tutorial/minecart_stack.png",
               "caption": "Сцепка нескольких вагонеток на одной линии"
             }
+          ],
+          "videos": [
+            "minecart_stack_demo"
           ]
         }
       ]
@@ -382,6 +418,9 @@
               "path": "textures/tutorial/hopper_insert.png",
               "caption": "Подача предметов в воронку сверху"
             }
+          ],
+          "videos": [
+            "hopper_insert_demo"
           ]
         },
         {
@@ -394,6 +433,9 @@
               "path": "textures/tutorial/hopper_timer.png",
               "caption": "Таймер на воронках с задержкой передачи"
             }
+          ],
+          "videos": [
+            "hopper_timer_demo"
           ]
         }
       ]
@@ -421,6 +463,9 @@
               "path": "textures/tutorial/daylight_wait.png",
               "caption": "Ожидание смены освещения датчиком дневного света"
             }
+          ],
+          "videos": [
+            "daylight_wait_demo"
           ]
         }
       ]
@@ -493,6 +538,9 @@
               "path": "textures/tutorial/sculk_armor.png",
               "caption": "Броня с зачарованием «Тихое шагание» для работы рядом со скалком"
             }
+          ],
+          "videos": [
+            "sculk_armor_demo"
           ]
         }
       ]
@@ -520,6 +568,9 @@
               "path": "textures/tutorial/dropper_drop.png",
               "caption": "Выбрасыватель, сбрасывающий предметы при сигнале"
             }
+          ],
+          "videos": [
+            "dropper_drop_demo"
           ]
         },
         {
@@ -532,6 +583,9 @@
               "path": "textures/tutorial/dispenser_activate.png",
               "caption": "Раздающий механизм, активируемый редстоун-сигналом"
             }
+          ],
+          "videos": [
+            "dispenser_activate_demo"
           ]
         }
       ]
@@ -559,6 +613,9 @@
               "path": "textures/tutorial/crafter_gold.png",
               "caption": "Автокрафтер, собирающий предметы из золота"
             }
+          ],
+          "videos": [
+            "crafter_gold_demo"
           ]
         },
         {
@@ -571,6 +628,9 @@
               "path": "textures/tutorial/crafter_cake.png",
               "caption": "Автокрафтер, крафтящий торт по заданному шаблону"
             }
+          ],
+          "videos": [
+            "crafter_cake_demo"
           ]
         }
       ]
