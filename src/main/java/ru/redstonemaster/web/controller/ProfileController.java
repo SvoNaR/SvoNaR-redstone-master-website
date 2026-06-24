@@ -141,7 +141,6 @@ public class ProfileController {
 		model.addAttribute("pendingUsername", pending.getUsername());
 		model.addAttribute("pendingEmail", pending.getEmail());
 		model.addAttribute("verificationExpiresAt", pending.getVerificationExpiresAt());
-		model.addAttribute("mailConfigured", this.emailVerificationService.isMailConfigured());
 		if (!model.containsAttribute("changeEmailForm")) {
 			ChangeEmailForm form = new ChangeEmailForm();
 			form.setEmail(pending.getEmail());
@@ -197,8 +196,7 @@ public class ProfileController {
 		}
 
 		this.userService.changeEmail(user, form.getEmail());
-		boolean sent = this.emailVerificationService.sendPendingEmailChangeEmail(user, langCode);
-		this.flashPendingEmailChangeResult(user, langCode, sent, redirectAttributes);
+		this.emailVerificationService.sendPendingEmailChangeEmail(user, langCode);
 		redirectAttributes.addFlashAttribute("emailChangePending", true);
 		return "redirect:/profile?lang=" + langCode;
 	}
@@ -243,9 +241,8 @@ public class ProfileController {
 		}
 
 		PendingRegistration pending = this.pendingRegistrationService.startRegistration(form);
-		boolean sent = this.emailVerificationService.sendRegistrationVerificationEmail(pending, langCode);
+		this.emailVerificationService.sendRegistrationVerificationEmail(pending, langCode);
 		session.setAttribute(PendingRegistrationSession.SESSION_KEY, pending.getId());
-		this.flashRegistrationVerificationResult(pending, langCode, sent, redirectAttributes);
 		return "redirect:/profile/pending-verification?lang=" + langCode;
 	}
 
@@ -274,8 +271,7 @@ public class ProfileController {
 		}
 
 		this.pendingRegistrationService.changeEmail(pending, form.getEmail());
-		boolean sent = this.emailVerificationService.sendRegistrationVerificationEmail(pending, langCode);
-		this.flashRegistrationVerificationResult(pending, langCode, sent, redirectAttributes);
+		this.emailVerificationService.sendRegistrationVerificationEmail(pending, langCode);
 		redirectAttributes.addFlashAttribute("emailChanged", true);
 		return "redirect:/profile/pending-verification?lang=" + langCode;
 	}
@@ -295,11 +291,8 @@ public class ProfileController {
 		}
 		PendingRegistration pending = lookup.pending().get();
 		this.pendingRegistrationService.issueVerificationToken(pending);
-		boolean sent = this.emailVerificationService.sendRegistrationVerificationEmail(pending, langCode);
-		this.flashRegistrationVerificationResult(pending, langCode, sent, redirectAttributes);
-		if (sent) {
-			redirectAttributes.addFlashAttribute("resent", true);
-		}
+		this.emailVerificationService.sendRegistrationVerificationEmail(pending, langCode);
+		redirectAttributes.addFlashAttribute("resent", true);
 		return "redirect:/profile/pending-verification?lang=" + langCode;
 	}
 
@@ -391,44 +384,5 @@ public class ProfileController {
 		model.addAttribute("pendingUsername", pending.getUsername());
 		model.addAttribute("pendingEmail", pending.getEmail());
 		model.addAttribute("verificationExpiresAt", pending.getVerificationExpiresAt());
-		model.addAttribute("mailConfigured", this.emailVerificationService.isMailConfigured());
-	}
-
-	private void flashRegistrationVerificationResult(
-			PendingRegistration pending,
-			String langCode,
-			boolean sent,
-			RedirectAttributes redirectAttributes
-	) {
-		if (sent) {
-			return;
-		}
-		if (!this.emailVerificationService.isMailConfigured()) {
-			redirectAttributes.addFlashAttribute(
-					"verificationUrl",
-					this.emailVerificationService.buildRegistrationVerificationUrl(pending, langCode)
-			);
-			return;
-		}
-		redirectAttributes.addFlashAttribute("emailSendFailed", true);
-	}
-
-	private void flashPendingEmailChangeResult(
-			User user,
-			String langCode,
-			boolean sent,
-			RedirectAttributes redirectAttributes
-	) {
-		if (sent) {
-			return;
-		}
-		if (!this.emailVerificationService.isMailConfigured()) {
-			redirectAttributes.addFlashAttribute(
-					"verificationUrl",
-					this.emailVerificationService.buildPendingEmailChangeUrl(user, langCode)
-			);
-			return;
-		}
-		redirectAttributes.addFlashAttribute("emailSendFailed", true);
 	}
 }

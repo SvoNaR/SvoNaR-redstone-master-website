@@ -138,7 +138,7 @@ public class EmailVerificationService {
 			}
 		}
 
-		LOGGER.warn("SMTP is not configured. Verification link for {}: {}", to, url);
+		LOGGER.warn("Verification email was not sent to {} (mail not configured). Link: {}", to, url);
 		return false;
 	}
 }
