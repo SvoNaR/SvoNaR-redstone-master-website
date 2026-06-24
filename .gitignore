@@ -1,1 +1,7 @@
-# Intentionally empty — full project mirror including secrets and build output.
+target/
+.idea/
+*.iml
+.tools/
+data/
+application-local.properties
+application-production-local.properties

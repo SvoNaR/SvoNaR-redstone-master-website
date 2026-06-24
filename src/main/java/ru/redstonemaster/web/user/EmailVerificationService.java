@@ -3,11 +3,15 @@ package ru.redstonemaster.web.user;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.MailException;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
+import jakarta.mail.internet.MimeMessage;
+import ru.redstonemaster.web.config.MailConfig;
+
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
 @Service
@@ -31,12 +35,12 @@ public class EmailVerificationService {
 		this.baseUrl = baseUrl;
 		this.fromAddress = fromAddress;
 		this.mailEnabled = mailEnabled;
-		this.mailPassword = mailPassword == null ? "" : mailPassword;
+		this.mailPassword = MailConfig.normalizeAppPassword(mailPassword);
 		this.mailSender = mailSender;
 	}
 
 	public boolean isMailConfigured() {
-		return this.mailEnabled && !this.mailPassword.isBlank() && this.mailSender.isPresent();
+		return this.mailEnabled && StringUtils.hasText(this.mailPassword) && this.mailSender.isPresent();
 	}
 
 	public String buildRegistrationVerificationUrl(PendingRegistration pending, String langCode) {
@@ -123,16 +127,17 @@ public class EmailVerificationService {
 				""".formatted(username, url));
 
 		if (this.isMailConfigured()) {
-			SimpleMailMessage message = new SimpleMailMessage();
-			message.setFrom(this.fromAddress);
-			message.setTo(to);
-			message.setSubject(subject);
-			message.setText(body);
 			try {
-				this.mailSender.get().send(message);
+				MimeMessage mimeMessage = this.mailSender.get().createMimeMessage();
+				MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, false, StandardCharsets.UTF_8.name());
+				helper.setFrom(this.fromAddress, "Redstone Master");
+				helper.setTo(to);
+				helper.setSubject(subject);
+				helper.setText(body, false);
+				this.mailSender.get().send(mimeMessage);
 				LOGGER.info("Verification email sent to {}", to);
 				return true;
-			} catch (MailException ex) {
+			} catch (Exception ex) {
 				LOGGER.error("Failed to send verification email to {}", to, ex);
 				return false;
 			}

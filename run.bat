@@ -43,5 +43,5 @@ if not exist "application-local.properties" (
 )
 
 set MAVEN_OPTS=-Dfile.encoding=UTF-8
-mvn generate-resources spring-boot:run
+mvn generate-resources spring-boot:run -Dspring-boot.run.arguments="--spring.config.additional-location=optional:file:./application-local.properties"
 pause
