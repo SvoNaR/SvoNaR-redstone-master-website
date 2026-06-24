@@ -3,6 +3,7 @@ package ru.redstonemaster.web.user;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -17,22 +18,25 @@ public class EmailVerificationService {
 	private final String baseUrl;
 	private final String fromAddress;
 	private final boolean mailEnabled;
+	private final String mailPassword;
 	private final Optional<JavaMailSender> mailSender;
 
 	public EmailVerificationService(
 			@Value("${app.base-url}") String baseUrl,
 			@Value("${app.mail.from}") String fromAddress,
 			@Value("${app.mail.enabled}") boolean mailEnabled,
+			@Value("${spring.mail.password:}") String mailPassword,
 			Optional<JavaMailSender> mailSender
 	) {
 		this.baseUrl = baseUrl;
 		this.fromAddress = fromAddress;
 		this.mailEnabled = mailEnabled;
+		this.mailPassword = mailPassword == null ? "" : mailPassword;
 		this.mailSender = mailSender;
 	}
 
 	public boolean isMailConfigured() {
-		return this.mailEnabled && this.mailSender.isPresent();
+		return this.mailEnabled && !this.mailPassword.isBlank() && this.mailSender.isPresent();
 	}
 
 	public String buildRegistrationVerificationUrl(PendingRegistration pending, String langCode) {
@@ -43,8 +47,8 @@ public class EmailVerificationService {
 		return this.baseUrl + "/profile/verify?token=" + user.getPendingEmailVerificationToken() + "&lang=" + langCode;
 	}
 
-	public void sendRegistrationVerificationEmail(PendingRegistration pending, String langCode) {
-		this.sendEmail(
+	public boolean sendRegistrationVerificationEmail(PendingRegistration pending, String langCode) {
+		return this.sendEmail(
 				pending.getEmail(),
 				pending.getUsername(),
 				this.buildRegistrationVerificationUrl(pending, langCode),
@@ -53,8 +57,8 @@ public class EmailVerificationService {
 		);
 	}
 
-	public void sendPendingEmailChangeEmail(User user, String langCode) {
-		this.sendEmail(
+	public boolean sendPendingEmailChangeEmail(User user, String langCode) {
+		return this.sendEmail(
 				user.getPendingEmail(),
 				user.getUsername(),
 				this.buildPendingEmailChangeUrl(user, langCode),
@@ -63,7 +67,7 @@ public class EmailVerificationService {
 		);
 	}
 
-	private void sendEmail(String to, String username, String url, String langCode, boolean registration) {
+	private boolean sendEmail(String to, String username, String url, String langCode, boolean registration) {
 		boolean russian = "ru".equals(langCode);
 		String subject = russian
 				? "Подтверждение аккаунта — Redstone Master"
@@ -124,11 +128,17 @@ public class EmailVerificationService {
 			message.setTo(to);
 			message.setSubject(subject);
 			message.setText(body);
-			this.mailSender.get().send(message);
-			LOGGER.info("Verification email sent to {}", to);
-			return;
+			try {
+				this.mailSender.get().send(message);
+				LOGGER.info("Verification email sent to {}", to);
+				return true;
+			} catch (MailException ex) {
+				LOGGER.error("Failed to send verification email to {}", to, ex);
+				return false;
+			}
 		}
 
-		LOGGER.warn("SMTP is disabled (app.mail.enabled=false). Verification link for {}: {}", to, url);
+		LOGGER.warn("SMTP is not configured. Verification link for {}: {}", to, url);
+		return false;
 	}
 }

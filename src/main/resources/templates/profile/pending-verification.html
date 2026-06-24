@@ -20,6 +20,11 @@
 					? 'Confirmation email sent again. Check your inbox.'
 					: 'Письмо с подтверждением отправлено повторно. Проверьте почту.'}"></p>
 			</div>
+			<div class="alert alert--warn" th:if="${emailSendFailed}">
+				<p th:text="${locale.code == 'en'
+					? 'Could not send the confirmation email. Check SMTP settings or try again later.'
+					: 'Не удалось отправить письмо с подтверждением. Проверьте настройки SMTP на сервере или повторите попытку позже.'}"></p>
+			</div>
 			<div class="alert alert--success" th:if="${emailChanged}">
 				<p th:text="${locale.code == 'en'
 					? 'Email updated. We sent a confirmation email to the new address.'
